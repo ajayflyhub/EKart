@@ -21,7 +21,7 @@ const Home = () => {
   return (
     <div>
       {/* Carousel */}
-      <Carousel afterChange={onChange}>
+      <Carousel afterChange={onChange} autoplaySpeed={2000} autoplay={true}>
         <div>
           <h1 style={contentStyle}>WELCOME TO EKART</h1>
         </div>
@@ -70,6 +70,21 @@ const Home = () => {
         </CardGrid>
       </div>
 
+      <div className="py-10 px-6 bg-gray-100">
+        <h1 className="font-bold text-4xl text-center mb-8">
+          USER REGISTRATION AND LOGIN
+        </h1>
+        <CardGrid>
+          <a href="/login" className="bg-white shadow-lg rounded-lg p-6 flex items-center justify-center hover:shadow-2xl transition-shadow duration-300">
+            <h2 className="text-lg font-semibold text-center">USER LOGIN</h2>
+          </a>
+          <a href="/register"className="bg-white shadow-lg rounded-lg p-6 flex items-center justify-center hover:shadow-2xl transition-shadow duration-300">
+            <h2 className="text-lg font-semibold text-center">
+              USER REGISTRATION
+            </h2>
+          </a>
+        </CardGrid>
+      </div>
       {/* Other Homepage Content */}
     </div>
   );
