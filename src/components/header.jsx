@@ -49,10 +49,10 @@ const Header = ({ onNavigate, onLogout }) => {
 
   return (
     <div
-      className="px-10 py-2 bg-red-200 text-white flex shadow-md w-full flex-row justify-between"
+      className="px-10 py-2 text-white flex shadow-md w-full flex-row justify-between"
     > 
-      <div className="text-xl font-bold">
-        <Link to="/">E-Cart</Link>
+      <div className="text-xl font-bold text-[#364d79]">
+        <Link to="/">E-Kart</Link>
       </div>
 
       <div className="flex flex-row gap-2">
