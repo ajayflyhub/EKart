@@ -13,6 +13,7 @@ function App() {
       <Router>
         <AuthProvider>
           <header>
+          <link rel="icon" href="./assets/favicon.png" />
             <Header />
           </header>
 
