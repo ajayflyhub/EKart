@@ -49,14 +49,14 @@ const Header = ({ onNavigate, onLogout, cartItemCount = 0 }) => {
   };
 
   return (
-    <div
-      className="px-10 py-2 text-white flex shadow-md w-full flex-row justify-between bg-white sticky top-0 z-50"
-    >
+    <div className="px-10 py-2 flex shadow-md w-full justify-between bg-white top-0 z-50">
+      {/* Logo */}
       <div className="text-xl font-bold text-[#364d79]">
         <Link to="/">E-Cart</Link>
       </div>
 
-      <div className="flex flex-row gap-2 text-[#364d79] font-bold items-center">
+      {/* Navigation Links */}
+      <div className="flex items-center gap-4 text-[#364d79] font-bold">
         <nav className="space-x-4">
           <Link to="/" className="hover:underline">
             Home
@@ -64,14 +64,23 @@ const Header = ({ onNavigate, onLogout, cartItemCount = 0 }) => {
           {renderNavigationLinks()}
         </nav>
 
-        {user && user.role === "customer" && (
-          <Link to="/customer/cart" className="relative">
+        {/* Cart Icon with Badge */}
+        {/* {user && user.role === "customer" && ( */}
+        <Link to="/customer/cart" className="relative">
+          <div className="scale-75">
+            {" "}
+            {/* Reduces the size */}
             <Badge count={cartItemCount} offset={[10, 0]} showZero>
-              <span className="material-icons text-xl">shopping_cart</span>
+              <span className="material-icons text-2xl text-[#364d79]">
+                shopping_cart
+              </span>
             </Badge>
-          </Link>
-        )}
+          </div>
+        </Link>
 
+        {/* )} */}
+
+        {/* Auth Buttons */}
         <div>
           {user ? (
             <button
