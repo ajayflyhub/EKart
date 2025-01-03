@@ -16,13 +16,13 @@ const Header = ({ onNavigate, onLogout, cartItemCount = 0 }) => {
 
   const renderCustomerLinks = () => (
     <>
-      <Link to="/customer/products" className="hover:underline">
+      <Link to="/products" className="hover:underline">
         Products
       </Link>
-      <Link to="/customer/cart" className="hover:underline">
+      <Link to="/cart" className="hover:underline">
         Cart
       </Link>
-      <Link to="/customer/orders" className="hover:underline">
+      <Link to="/orders" className="hover:underline">
         My Orders
       </Link>
     </>
@@ -64,12 +64,9 @@ const Header = ({ onNavigate, onLogout, cartItemCount = 0 }) => {
           {renderNavigationLinks()}
         </nav>
 
-        {/* Cart Icon with Badge */}
         {/* {user && user.role === "customer" && ( */}
-        <Link to="/customer/cart" className="relative">
+        <Link to="/cart" className="relative">
           <div className="scale-75">
-            {" "}
-            {/* Reduces the size */}
             <Badge count={cartItemCount} offset={[10, 0]} showZero>
               <span className="material-icons text-2xl text-[#364d79]">
                 shopping_cart
@@ -78,9 +75,6 @@ const Header = ({ onNavigate, onLogout, cartItemCount = 0 }) => {
           </div>
         </Link>
 
-        {/* )} */}
-
-        {/* Auth Buttons */}
         <div>
           {user ? (
             <button

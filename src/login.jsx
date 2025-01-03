@@ -72,6 +72,14 @@ const Login = () => {
               Register here
             </a>
           </div>
+
+          <div className="text-center text-gray-600">
+           Forgot Password?{" "}
+            <a href="/ResetPassword" className="text-blue-500 hover:underline">
+              Reset password here
+            </a>
+          </div>
+
         </Form>
       </div>
     </div>

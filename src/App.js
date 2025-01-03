@@ -7,6 +7,11 @@ import Home from "./Home";
 import Footer from "./components/footer";
 import Registration from "./registration";
 import Dashboard from "./dashboard";
+import ProductPage from "./product";
+import ProductDetailsPage from "./prodcutDetails";
+import ForgotPassword from "./forgotPassword";
+import ResetPassword from "./ResetPassword";
+import CartPage from "./cart";
 
 function App() {
   return (
@@ -25,6 +30,11 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/register" element={<Registration />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/products" element={<ProductPage />} />
+              <Route path="/products/:id" element={<ProductDetailsPage />} />
+              <Route path="/forgotPassword" element={<ForgotPassword />} />
+              <Route path="/ResetPassword" element={<ResetPassword />} />
+              <Route path="/cart" element={<CartPage />} />
             </Routes>
           </main>
           <footer>

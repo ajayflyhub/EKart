@@ -1,41 +1,89 @@
-import React from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { products } from "./assets/mockData"; // Import mock data
 
 const CartPage = () => {
-  const cartItems = [
-    { id: 1, name: "Product 1", price: 100, quantity: 2 },
-    { id: 2, name: "Product 2", price: 50, quantity: 1 },
-  ];
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredProducts, setFilteredProducts] = useState(products);
+  const [cart, setCart] = useState([]);
+  const navigate = useNavigate();
 
-  const calculateTotal = () =>
-    cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+  const handleSearch = () => {
+    const filtered = products.filter((product) =>
+      product.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredProducts(filtered);
+  };
+
+  const RemoveFromCart = (product) => {
+    setCart((prevCart) => [...prevCart, product]);
+    alert(`${product.name} has been removed to the cart!`);
+  };
+
+  const viewDetails = (id) => {
+    navigate(`/products/${id}`);
+  };
 
   return (
-    <div className="max-w-screen-lg mx-auto py-8 px-4">
-      <h1 className="text-2xl font-bold mb-6">Your Cart</h1>
-      {cartItems.length === 0 ? (
-        <p>Your cart is empty.</p>
-      ) : (
-        <div className="space-y-4">
-          {cartItems.map((item) => (
-            <div
-              key={item.id}
-              className="flex items-center justify-between border p-4 rounded-md shadow-md"
-            >
-              <div>
-                <h2 className="text-lg font-semibold">{item.name}</h2>
-                <p>Price: ${item.price}</p>
-                <p>Quantity: {item.quantity}</p>
-              </div>
-              <p className="text-lg font-bold">
-                Total: ${item.price * item.quantity}
-              </p>
-            </div>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">Products</h1>
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Search products..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="border border-gray-300 rounded px-4 py-2 mr-2"
+        />
+        <button
+          onClick={handleSearch}
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        >
+          Search
+        </button>
+      </div>
+      <table className="w-full border-collapse border border-gray-200">
+        <thead>
+          <tr>
+            <th className="border border-gray-300 px-4 py-2">Product Image</th>
+            <th className="border border-gray-300 px-4 py-2">Name</th>
+            <th className="border border-gray-300 px-4 py-2">Price</th>
+            <th className="border border-gray-300 px-4 py-2">Details</th>
+            <th className="border border-gray-300 px-4 py-2">Add to Cart</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredProducts.map((product) => (
+            <tr key={product.id}>
+              <td className="border border-gray-300 px-4 py-2 w-[20px] max-h-[50px]">
+                <img src={product.imageLink} alt={product.name}></img>
+              </td>
+              <td className="border border-gray-300 px-4 py-2">
+                {product.name}
+              </td>
+              <td className="border border-gray-300 px-4 py-2">
+                {product.price}
+              </td>
+              <td className="border border-gray-300 px-4 py-2">
+                <button
+                  onClick={() => viewDetails(product.id)}
+                  className="text-blue-500 underline"
+                >
+                  View Details
+                </button>
+              </td>
+              <td className="border border-gray-300 px-4 py-2">
+                <button
+                  onClick={() => RemoveFromCart(product)}
+                  className="bg-red-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+                >
+                  Remove From Cart
+                </button>
+              </td>
+            </tr>
           ))}
-          <div className="text-right font-bold text-xl mt-4">
-            Grand Total: ${calculateTotal()}
-          </div>
-        </div>
-      )}
+        </tbody>
+      </table>
     </div>
   );
 };
