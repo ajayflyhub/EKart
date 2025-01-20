@@ -28,7 +28,6 @@ public class UserService : IUserService
 
     public async Task<User> RegisterUserAsync(User user)
     {
-        // Directly store the password as entered (without hashing)
         return await _userRepository.AddUserAsync(user);
     }
 
@@ -40,10 +39,8 @@ public class UserService : IUserService
         existingUser.Username = user.Username ?? existingUser.Username;
         existingUser.Email = user.Email ?? existingUser.Email;
         existingUser.Role = user.Role ?? existingUser.Role;
-        existingUser.PasswordHash = user.PasswordHash; // Directly store the password as entered
-
-        // Correctly pass the id and updated user
-        await _userRepository.UpdateUserAsync(id, existingUser); // Pass both id and updated user
+        existingUser.PasswordHash = user.PasswordHash;
+        await _userRepository.UpdateUserAsync(id, existingUser);
         return true;
     }
 
@@ -59,10 +56,8 @@ public class UserService : IUserService
     public async Task<string> AuthenticateUserAsync(string username, string password)
     {
         var user = await _userRepository.GetUserByUsernameAsync(username);
-        if (user == null || user.PasswordHash != password) // Compare plain text passwords
+        if (user == null || user.PasswordHash != password)
             return null;
-
-        // Generate JWT token
         return _jwtService.GenerateToken(user);
     }
 }
