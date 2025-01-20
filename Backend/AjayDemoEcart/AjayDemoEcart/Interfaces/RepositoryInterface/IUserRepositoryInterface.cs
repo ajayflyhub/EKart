@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using AjayDemoEcart.Models;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public interface IUserRepositoryInterface

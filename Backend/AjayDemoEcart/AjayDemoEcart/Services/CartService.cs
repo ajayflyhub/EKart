@@ -1,54 +1,78 @@
 ﻿using AjayDemoEcart.Interfaces.ServicesInterface;
 using AjayDemoEcart.Models;
-using AjayDemoEcart.Repositories;
-using Microsoft.AspNetCore.Cors.Infrastructure;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Linq;
 
-namespace AjayDemoEcart.Services
+public class CartService : ICartService
 {
-    public class CartService : ICartService
+    private readonly ICartRepository _cartRepository;
+
+    public CartService(ICartRepository cartRepository)
     {
-        private readonly CartRepository _cartRepository;
+        _cartRepository = cartRepository;
+    }
 
-        public CartService(CartRepository cartRepository)
+    public async Task<IEnumerable<Cart>> GetAllCartsAsync()
+    {
+        return await _cartRepository.GetAllAsync();
+    }
+
+    public async Task<Cart> GetCartByIdAsync(int id)
+    {
+        return await _cartRepository.GetByIdAsync(id);
+    }
+
+    public async Task<bool> RemoveFromCartAsync(int productId, int userId)
+    {
+        return await _cartRepository.RemoveFromCartAsync(productId, userId);
+    }
+
+    public async Task<IEnumerable<Cart>> GetCartsByUserIdAsync(int userId)
+    {
+        return await _cartRepository.GetByUserIdAsync(userId);
+    }
+
+    public async Task<Cart> AddToCartAsync(int productId, int userId, int quantity = 1)
+    {
+        var existingCartItems = await _cartRepository.GetByUserIdAsync(userId);
+        var cartItem = existingCartItems.FirstOrDefault(item => item.ProductId == productId);
+
+        if (cartItem == null)
         {
-            _cartRepository = cartRepository;
+            cartItem = new Cart
+            {
+                UserId = userId,
+                ProductId = productId,
+                Quantity = quantity,
+                CreatedAt = DateTime.UtcNow
+            };
+            await _cartRepository.AddAsync(cartItem);
+        }
+        else
+        {
+            cartItem.Quantity += quantity;
+            await _cartRepository.UpdateAsync(cartItem.Id, cartItem);
         }
 
-        public async Task<IEnumerable<Cart>> GetAllCartsAsync()
+        return cartItem;
+    }
+
+    public async Task<bool> UpdateCartAsync(int id, Cart cart)
+    {
+        if (id != cart.Id)
         {
-            return await _cartRepository.GetAllAsync();
+            throw new ArgumentException("Cart ID mismatch.");
         }
 
-        public async Task<Cart> GetCartByIdAsync(int id)
-        {
-            return await _cartRepository.GetByIdAsync(id);
-        }
+        return await _cartRepository.UpdateAsync(id, cart);
+    }
 
-        public async Task<IEnumerable<Cart>> GetCartsByUserIdAsync(int userId)
-        {
-            return await _cartRepository.GetByUserIdAsync(userId);
-        }
+    public async Task<bool> DeleteCartAsync(int id)
+    {
+        return await _cartRepository.DeleteAsync(id);
+    }
 
-        public async Task<Cart> AddToCartAsync(Cart cart)
-        {
-            return await _cartRepository.AddAsync(cart);
-        }
-
-        public async Task<bool> UpdateCartAsync(int id, Cart cart)
-        {
-            return await _cartRepository.UpdateAsync(id, cart);
-        }
-
-        public async Task<bool> DeleteCartAsync(int id)
-        {
-            return await _cartRepository.DeleteAsync(id);
-        }
-
-        public async Task<bool> ClearCartByUserIdAsync(int userId)
-        {
-            return await _cartRepository.ClearByUserIdAsync(userId);
-        }
+    public async Task<bool> ClearCartByUserIdAsync(int userId)
+    {
+        return await _cartRepository.ClearByUserIdAsync(userId);
     }
 }

@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace AjayDemoEcart.Interfaces.RepositoryInterface
+namespace AjayDemoEcart.Interfaces.ServicesInterface
 {
-    public interface ICartRepositoryInterface
+    public interface ICartRepository
     {
-        Task<IEnumerable<Cart>> GetAllAsync();
-        Task<Cart> GetByIdAsync(int id);
-        Task<IEnumerable<Cart>> GetByUserIdAsync(int userId);
+
         Task<Cart> AddAsync(Cart cart);
+        Task<Cart> GetByIdAsync(int id);
+        Task<IEnumerable<Cart>> GetAllAsync();
+        Task<IEnumerable<Cart>> GetByUserIdAsync(int userId);
+        Task<bool> RemoveFromCartAsync(int productId, int userId);
         Task<bool> UpdateAsync(int id, Cart cart);
         Task<bool> DeleteAsync(int id);
         Task<bool> ClearByUserIdAsync(int userId);

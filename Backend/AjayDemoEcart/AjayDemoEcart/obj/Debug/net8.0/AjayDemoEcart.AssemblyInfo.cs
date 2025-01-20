@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AjayDemoEcart")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+39c5084fed47212c2145decbb1715f3aff23df99")]
 [assembly: System.Reflection.AssemblyProductAttribute("AjayDemoEcart")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AjayDemoEcart")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

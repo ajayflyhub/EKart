@@ -22,7 +22,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(Roles = "admin")]
+    //[Authorize(Roles = "admin")]
     public async Task<ActionResult<IEnumerable<User>>> GetAllUsers()
     {
         var users = await _userService.GetAllUsersAsync();
@@ -31,15 +31,27 @@ public class UsersController : ControllerBase
 
     [HttpGet("{id}")]
     [Authorize]
-    public async Task<ActionResult<User>> GetUserById(int id)
+    public async Task<ActionResult<UserDto>> GetUserById(int id)
     {
         var user = await _userService.GetUserByIdAsync(id);
-        if (user == null) return NotFound("User not found.");
-        return Ok(user);
+        if (user == null)
+        {
+            return NotFound("User not found.");
+        }
+
+        var userDto = new UserDto
+        {
+            Email = user.Email,
+            Role = user.Role,
+            Username = user.Username,
+            Id = user.Id
+        };
+
+        return Ok(userDto);
     }
 
     [HttpPut("{id}")]
-    [Authorize]
+    //[Authorize]
     public async Task<ActionResult> UpdateUser(int id, [FromBody] User user)
     {
         var isUpdated = await _userService.UpdateUserAsync(id, user);

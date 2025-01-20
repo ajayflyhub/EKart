@@ -1,6 +1,6 @@
 [
   {
-    "ContainingType": "AjayDemoEcart.Controllers.CartsController",
+    "ContainingType": "CartsController",
     "Method": "GetAllCarts",
     "RelativePath": "api/Carts",
     "HttpMethod": "GET",
@@ -20,33 +20,7 @@
     ]
   },
   {
-    "ContainingType": "AjayDemoEcart.Controllers.CartsController",
-    "Method": "AddToCart",
-    "RelativePath": "api/Carts",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "cart",
-        "Type": "AjayDemoEcart.Models.Cart",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "AjayDemoEcart.Models.Cart",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "AjayDemoEcart.Controllers.CartsController",
+    "ContainingType": "CartsController",
     "Method": "GetCartById",
     "RelativePath": "api/Carts/{id}",
     "HttpMethod": "GET",
@@ -72,9 +46,77 @@
     ]
   },
   {
-    "ContainingType": "AjayDemoEcart.Controllers.CartsController",
-    "Method": "UpdateCart",
+    "ContainingType": "CartsController",
+    "Method": "DeleteCart",
     "RelativePath": "api/Carts/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CartsController",
+    "Method": "AddToCart",
+    "RelativePath": "api/Carts/AddToCart",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "productId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "AjayDemoEcart.Models.Cart",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "CartsController",
+    "Method": "RemoveFromCart",
+    "RelativePath": "api/Carts/RemoveFromCart",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "productId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CartsController",
+    "Method": "UpdateCart",
+    "RelativePath": "api/Carts/updateCart/{id}",
     "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
@@ -93,25 +135,9 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "AjayDemoEcart.Controllers.CartsController",
-    "Method": "DeleteCart",
-    "RelativePath": "api/Carts/{id}",
-    "HttpMethod": "DELETE",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "AjayDemoEcart.Controllers.CartsController",
+    "ContainingType": "CartsController",
     "Method": "GetCartsByUserId",
-    "RelativePath": "api/Carts/User/{userId}",
+    "RelativePath": "api/Carts/user/{userId}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -133,22 +159,6 @@
         "StatusCode": 200
       }
     ]
-  },
-  {
-    "ContainingType": "AjayDemoEcart.Controllers.CartsController",
-    "Method": "ClearCartByUserId",
-    "RelativePath": "api/Carts/User/{userId}",
-    "HttpMethod": "DELETE",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "userId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
   },
   {
     "ContainingType": "AjayDemoEcart.Controllers.OrderController",
@@ -512,7 +522,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "User",
+        "Type": "UserDto",
         "MediaTypes": [
           "text/plain",
           "application/json",

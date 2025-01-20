@@ -1,5 +1,6 @@
-﻿using AjayDemoEcart.Models; // Correct namespace to import your models
+﻿using AjayDemoEcart.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace AjayDemoEcart.Data
 {
@@ -8,6 +9,7 @@ namespace AjayDemoEcart.Data
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
         }
+
         public DbSet<User> Users { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Cart> Carts { get; set; }

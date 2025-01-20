@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
+using AjayDemoEcart.Interfaces.ServicesInterface;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,15 +42,15 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-builder.Services.AddScoped<CartRepository, CartRepository>();
-builder.Services.AddScoped<CartService>();
+builder.Services.AddScoped<ICartRepository, CartRepository>();
+builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<ProductRepository, ProductRepository>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<OrderRepository, OrderRepository>();
 builder.Services.AddScoped<OrderService, OrderService>();
 builder.Services.AddScoped<OrdersRepository, OrdersRepository>();
 builder.Services.AddScoped<OrdersService, OrdersService>();
-builder.Services.AddScoped<UserRepository, UserRepository>();
+builder.Services.AddScoped<IUserRepositoryInterface, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<EmailService>();
