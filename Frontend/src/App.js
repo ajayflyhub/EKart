@@ -8,7 +8,7 @@ import Footer from "./components/footer";
 import Registration from "./registration";
 import Dashboard from "./dashboard";
 import ProductPage from "./product";
-import ProductDetailsPage from "./prodcutDetails";
+import ProductDetailsPage from "./productDetails";
 import ForgotPassword from "./forgotPassword";
 import ResetPassword from "./ResetPassword";
 import CartPage from "./cart";

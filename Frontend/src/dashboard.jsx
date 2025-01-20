@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 // Mock user data
-const mockUser = {
+const user = {
   name: "John Doe",
   role: "admin", // Change to "admin" for admin
   permissions: {
@@ -10,9 +11,14 @@ const mockUser = {
   },
 };
 
+
+
 const Dashboard = () => {
-  const [user] = useState(mockUser);
+  const user = useSelector((state) => state.user.user);
   const [activeTab, setActiveTab] = useState('Overview');
+  useEffect(()=> {
+    console.log("us231er",user)
+  },[user])
 
   const renderContent = () => {
     switch (activeTab) {
@@ -20,7 +26,13 @@ const Dashboard = () => {
         return (
           <div>
             <h2 className="text-2xl font-bold mb-4">Overview</h2>
-            <p>Welcome to your dashboard! Use the side menu to navigate.</p>
+            <div className='grid grid-cols-2 gap-12 self-center'>
+            <div className="w-full mx-auto bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-6"></div>
+            <div className="w-full mx-auto bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-6"></div>
+            <div className="w-full mx-auto bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-6"></div>
+            <div className="w-full mx-auto bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-6"></div>
+            </div>
+          
           </div>
         );
       case 'Manage Products':

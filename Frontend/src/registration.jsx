@@ -1,47 +1,59 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Form, Input, Button, Typography, message } from "antd";
 import { LockOutlined, UserOutlined, MailOutlined } from "@ant-design/icons";
-import bcrypt from "bcryptjs";
+import { useDispatch, useSelector } from "react-redux";
+import { createUser } from "./redux/Actions/userActions";
+import { hashPassword } from "./utils/passwordHash";
+import Cookies from 'js-cookie';
+import { useNavigate } from "react-router-dom";
 
 const { Title } = Typography;
 
 const Registration = () => {
   const [form] = Form.useForm();
-
-  // Function to hash a password
-  const hashPassword = async (plainPassword) => {
-    const saltRounds = 10;
-    return await bcrypt.hash(plainPassword, saltRounds);
-  };
-
-  // Function to verify a password
-  const verifyPassword = async (plainPassword, hashedPassword) => {
-    return await bcrypt.compare(plainPassword, hashedPassword);
-  };
+  const dispatch = useDispatch();
+  const resetToken = [...Array(30)]
+  .map(() => Math.random().toString(36)[2])
+  .join('');
+  const navigate = useNavigate();
+  const resetTokenExpires = new Date();
+  resetTokenExpires.setHours(resetTokenExpires.getHours() + 1);
+  const { user } = useSelector((state) => state.user);
+    const token = Cookies.get('jwtToken');
+  
+    useEffect(() => {
+      if (token) {
+        navigate('/');
+      }
+    }, [token, navigate]);
+  
 
   const onFinish = async (values) => {
     try {
-      console.log("Form values:", values);
+      const hashedPassword = await hashPassword(values.password);
+      const role = 'customer'
+      dispatch(
+        createUser(
+          values.username,
+          values.email,
+          hashedPassword,
+          resetToken,
+          resetTokenExpires,
+          role
+        )
+      );
 
-      // Step 1: Hash the password
-      const hashed = await hashPassword(values.password);
-      console.log("Hashed Password:", hashed);
-
-      // Step 2: Verify the password (for demonstration)
-      const isMatch = await verifyPassword(values.password, hashed);
-      console.log("Password match:", isMatch);
-
-      if (isMatch) {
-        message.success("Registration successful! Passwords match.");
-        // You can now save the hashed password to your database
-      } else {
-        message.error("Password verification failed.");
-      }
+      message.success("Registration successful!");
+      form.resetFields();
     } catch (error) {
       console.error("Error during registration:", error);
       message.error("An error occurred during registration.");
     }
   };
+
+  useEffect(()=> {
+    console.log("us231er",user)
+  },[user])
 
   const onFinishFailed = (errorInfo) => {
     console.error("Failed:", errorInfo);
@@ -141,8 +153,8 @@ const Registration = () => {
 
           <div className="text-center text-gray-600">
             Already have an account?{" "}
-            <a href="/login" className="text-blue-500 hover:underline">
-              Log in here
+            <a href="/login" className="text-blue-500">
+              Login here
             </a>
           </div>
         </Form>

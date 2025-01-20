@@ -12,31 +12,16 @@ const Home = () => {
     height: "400px",
     objectFit: "cover", // Prevents stretching
     display: "block",
-  };
-  const onChange = (currentSlide) => {
-    console.log(`Carousel slide changed to: ${currentSlide}`);
-  };
+  }; 
 
-  const dispatch = useDispatch();
-  const products = useSelector((state) => state.products.products);
-  const loading = useSelector((state) => state.products.loading);
-  const error = useSelector((state) => state.products.error);
-
-  useEffect(() => {
-    dispatch(fetchProducts());
-  }, [dispatch]);
-
-  useEffect(() => {
-    console.log("products",products)    
-  },[products])
-
+  const user = useSelector((state) => state.user.user);
 
   return (
     <div className="bg-blue-100">
-      <Carousel afterChange={onChange} autoplaySpeed={2000} autoplay={true}>
-        {BannerImages.map((image) => {
+      <Carousel autoplaySpeed={2000} autoplay={true}>
+        {BannerImages.map((image,key) => {
           return (
-            <div className="flex flex-col">
+            <div className="flex flex-col" key={key}>
               <img style={contentStyle} src={image.imageLink} alt="" />
             </div>
           );
@@ -98,7 +83,6 @@ const Home = () => {
           </a>
         </CardGrid>
       </div>
-      {/* Other Homepage Content */}
     </div>
   );
 };

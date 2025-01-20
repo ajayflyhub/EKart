@@ -1,36 +1,37 @@
-import React from "react";
-import { Form, Input, Button, Typography, message } from "antd";
+import React, { useEffect } from "react";
+import { Form, Input, Button, Typography } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchProducts } from "./redux/reducers/productReducer";
+import { useDispatch } from "react-redux";
+import { LoginUser } from "./redux/Actions/userActions";
+import { useNavigate } from 'react-router-dom'; // Use useNavigate for navigation
+import Cookies from 'js-cookie';
 
 const { Title } = Typography;
 
 const Login = () => {
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.user.user);
-  const loading = useSelector((state) => state.user.loading);
-  const error = useSelector((state) => state.user.error);
-
   const [form] = Form.useForm();
+  const navigate = useNavigate();
+  const token = Cookies.get('jwtToken');
 
   useEffect(() => {
-    console.log("products",user)    
-  },[user])
+    if (token) {
+      navigate('/');
+    }
+  }, [token, navigate]);
 
 
-  const onFinish = (values) => {
-    console.log("Form values:", values);
-    message.success("Login successful!");
-        dispatch(fetchProducts());
-    // Implement login logic here
+  const onSubmit = async (values) => {
+      let response = await dispatch(LoginUser(values.username, values.password)); 
+      console.log("Form values:", values);
+      if (response.success) {
+        console.log("Login successful:", response);
+        navigate("/dashboard");
+      } else {
+        console.log("Login unsuccess:");
+      }
   };
-
-  const onFinishFailed = (errorInfo) => {
-    console.error("Failed:", errorInfo);
-    message.error("Please correct the errors and try again.");
-  };
-
+  
   return (
     <div className="flex items-center justify-center min-h-screen bg-blue-100 h-auto w-full">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
@@ -41,8 +42,7 @@ const Login = () => {
           form={form}
           name="login"
           layout="vertical"
-          onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
+          onFinish={onSubmit}
           className="space-y-4"
         >
           <Form.Item

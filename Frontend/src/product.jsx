@@ -1,23 +1,33 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { products } from "./assets/mockData"; // Import mock data
+import ProductCard from "./components/productCard";
+import { fetchProducts } from "./redux/reducers/productReducer";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addToCartAsync,
+  removeFromCartAsync,
+} from "./redux/Actions/cartActions";
 
 const ProductPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredProducts, setFilteredProducts] = useState(products);
-  const [cart, setCart] = useState([]);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const products = useSelector((state) => state.products.products);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+
+  useEffect(() => {
+    dispatch(fetchProducts());
+  }, [dispatch]);
+
+  useEffect(() => {
+    setFilteredProducts(products);
+  }, [products]);
 
   const handleSearch = () => {
     const filtered = products.filter((product) =>
       product.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredProducts(filtered);
-  };
-
-  const addToCart = (product) => {
-    setCart((prevCart) => [...prevCart, product]);
-    alert(`${product.name} has been added to the cart!`);
   };
 
   const viewDetails = (id) => {
@@ -42,7 +52,14 @@ const ProductPage = () => {
           Search
         </button>
       </div>
-      <table className="w-full border-collapse border border-gray-200">
+
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 w-full gap-12">
+        {filteredProducts.map((item) => (
+          <ProductCard item={item} />
+        ))}
+      </div>
+
+      {/* <table className="w-full border-collapse border border-gray-200">
         <thead>
           <tr>
             <th className="border border-gray-300 px-4 py-2">Product Image</th>
@@ -83,7 +100,7 @@ const ProductPage = () => {
             </tr>
           ))}
         </tbody>
-      </table>
+      </table> */}
     </div>
   );
 };
