@@ -10,6 +10,7 @@ namespace AjayDemoEcart.Interfaces.ServicesInterface
         Task<Cart> AddAsync(Cart cart);
         Task<Cart> GetByIdAsync(int id);
         Task<IEnumerable<Cart>> GetAllAsync();
+        Task ClearCartAsync(int userId);
         Task<IEnumerable<Cart>> GetByUserIdAsync(int userId);
         Task<bool> RemoveFromCartAsync(int productId, int userId);
         Task<bool> UpdateAsync(int id, Cart cart);

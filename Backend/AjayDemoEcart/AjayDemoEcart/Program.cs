@@ -7,14 +7,20 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
 using AjayDemoEcart.Interfaces.ServicesInterface;
+using System.Data;
+using AjayDemoEcart.Interfaces;
+using AjayDemoEcart.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+//var connectionString = builder.Configuration.GetConnectionString("EKartConnection");
+//Console.WriteLine(connectionString);
 
-builder.Services.AddDbContext<DataContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("EKartConnection")));
+// Register DbContext with connection string
+builder.Services.AddDbContext < DataContext >();
 
+// Add Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -42,19 +48,29 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+// Register repositories and services
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<ProductRepository, ProductRepository>();
 builder.Services.AddScoped<ProductService>();
-builder.Services.AddScoped<OrderRepository, OrderRepository>();
-builder.Services.AddScoped<OrderService, OrderService>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<OrdersRepository, OrdersRepository>();
-builder.Services.AddScoped<OrdersService, OrdersService>();
 builder.Services.AddScoped<IUserRepositoryInterface, UserRepository>();
-builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAddressRepository, AddressRepository>();
+builder.Services.AddScoped<IUserServiceInterface, UserService>();
+builder.Services.AddScoped<IAddressService, AddressService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
-builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<IWalletRepositoryInterface, WalletRepository>();
+builder.Services.AddScoped<IWalletServiceInterface, WalletService>();
 
+// Register EmailRepository correctly
+builder.Services.AddScoped<IEmailRepositoryInterface, EmailRepository>();
+builder.Services.AddScoped<IEmailServiceInterface, EmailService>();
+builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<EmailRepository>();  // Register EmailRepository
+
+// Add Authentication with JWT Bearer
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -68,10 +84,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+
             RoleClaimType = ClaimTypes.Role
         };
     });
 
+// Add CORS policy
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
@@ -84,7 +102,6 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
-
 
 if (app.Environment.IsDevelopment())
 {

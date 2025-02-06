@@ -21,6 +21,18 @@ const userSlice = createSlice({
       state.error = action.payload;
     },
 
+    fetchAllUsersRequest: (state) => {
+      state.loading = true;
+    },
+    fetchAllUsersSuccess: (state, action) => {
+      state.loading = false;
+      state.users = action.payload;
+    },
+    fetchAllUsersFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+
     // Create user actions
     createUserRequest: (state) => {
       state.loading = true;
@@ -30,6 +42,32 @@ const userSlice = createSlice({
       state.user = action.payload;
     },
     createUserFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+
+    // Update user actions
+    updateUserRequest: (state) => {
+      state.loading = true;
+    },
+    updateUserSuccess: (state, action) => {
+      state.loading = false;
+      state.user = action.payload;
+    },
+    updateUserFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+
+    // Delete user actions
+    deleteUserRequest: (state) => {
+      state.loading = true;
+    },
+    deleteUserSuccess: (state, action) => {
+      state.loading = false;
+      state.user = null; // or implement logic for user removal
+    },
+    deleteUserFailure: (state, action) => {
       state.loading = false;
       state.error = action.payload;
     },
@@ -50,12 +88,21 @@ const userSlice = createSlice({
 });
 
 export const {
+  fetchAllUsersRequest,
+  fetchAllUsersSuccess,
+  fetchAllUsersFailure,
   fetchUserRequest,
   fetchUserSuccess,
   fetchUserFailure,
   createUserRequest,
   createUserSuccess,
   createUserFailure,
+  updateUserRequest,
+  updateUserSuccess,
+  updateUserFailure,
+  deleteUserRequest,
+  deleteUserSuccess,
+  deleteUserFailure,
   loginRequest,
   loginSuccess,
   loginFailure,

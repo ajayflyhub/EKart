@@ -47,6 +47,12 @@ namespace AjayDemoEcart.Repositories
             return true;
         }
 
+        // fetch products by a list of ids
+        public async Task<List<Product>> GetProductsByIdsAsync(List<int> ids)
+        {
+            return await _context.Products.Where(p => ids.Contains(p.Id)).ToListAsync();
+        }
+
         public async Task<bool> DeleteAsync(int id)
         {
             var product = await _context.Products.FindAsync(id);

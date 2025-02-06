@@ -22,6 +22,18 @@ public class CartRepository : ICartRepository
         return cart;
     }
 
+    public async Task ClearCartAsync(int userId)
+    {
+        var userCartItems = _context.Carts.Where(c => c.UserId == userId);
+
+        if (userCartItems.Any())
+        {
+            _context.Carts.RemoveRange(userCartItems);
+            await _context.SaveChangesAsync();
+        }
+    }
+
+
     public async Task<Cart> GetByIdAsync(int id)
     {
         return await _context.Carts
@@ -90,4 +102,5 @@ public class CartRepository : ICartRepository
         await _context.SaveChangesAsync();
         return true;
     }
+
 }

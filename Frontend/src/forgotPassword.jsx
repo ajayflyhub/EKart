@@ -1,6 +1,6 @@
 import React from "react";
 import { Form, Input, Button, Typography } from "antd";
-import { UserOutlined, MailOutlined, LockOutlined } from "@ant-design/icons";
+import { MailOutlined } from "@ant-design/icons";
 
 const { Title } = Typography;
 

@@ -2,8 +2,6 @@
 using AjayDemoEcart.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -17,7 +15,7 @@ public class CartsController : ControllerBase
     }
 
     [HttpGet]
-    //[Authorize(Roles = "admin")]
+    [Authorize(Roles = "Admin" )]
     public async Task<ActionResult<IEnumerable<Cart>>> GetAllCarts()
     {
         var carts = await _cartService.GetAllCartsAsync();
@@ -37,18 +35,19 @@ public class CartsController : ControllerBase
     }
 
     [HttpGet("user/{userId}")]
-    [Authorize]
+    [Authorize(Roles = "Admin,customer")]
     public async Task<ActionResult<IEnumerable<Cart>>> GetCartsByUserId(int userId)
     {
         var carts = await _cartService.GetCartsByUserIdAsync(userId);
         if (carts == null || !carts.Any())
         {
-            return NotFound($"No carts found for User with ID {userId}.");
+            return Ok(new List<Cart>());
         }
         return Ok(carts);
     }
 
     [HttpPost("AddToCart")]
+    [Authorize(Roles = "Admin,customer")]
     public async Task<ActionResult<Cart>> AddToCart([FromQuery] int productId, [FromQuery] int userId)
     {
         Console.WriteLine($"Adding product {productId} to cart for user {userId}");
@@ -65,7 +64,7 @@ public class CartsController : ControllerBase
 
 
     [HttpDelete("RemoveFromCart")]
-    [Authorize]
+    [Authorize(Roles = "Admin,customer")]
     public async Task<IActionResult> RemoveFromCart([FromQuery] int productId, [FromQuery] int userId)
     {
         try
@@ -89,7 +88,7 @@ public class CartsController : ControllerBase
 
 
     [HttpPut("updateCart/{id}")]
-    [Authorize]
+    [Authorize(Roles = "Admin,customer")]
     public async Task<IActionResult> UpdateCart(int id, [FromBody] Cart cart)
     {
         if (id != cart.Id)
@@ -107,7 +106,7 @@ public class CartsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    [Authorize(Roles = "admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteCart(int id)
     {
         var success = await _cartService.DeleteCartAsync(id);
@@ -117,5 +116,25 @@ public class CartsController : ControllerBase
         }
 
         return NoContent();
+    }
+
+    [HttpDelete("clearCart/{userId}")]
+    [Authorize(Roles = "Admin,customer")]
+    public async Task<IActionResult> ClearCart(int userId)
+    {
+        try
+        {
+            var success = await _cartService.ClearCartByUserIdAsync(userId);
+            if (!success)
+            {
+                return Ok   (new { message = $"No items found in the cart for User with ID {userId}." });
+            }
+
+            return Ok(new { message = "Cart cleared successfully." });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
     }
 }

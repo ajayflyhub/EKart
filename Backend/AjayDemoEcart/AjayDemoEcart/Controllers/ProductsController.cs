@@ -17,28 +17,36 @@ namespace AjayDemoEcart.Controllers
         }
 
         [HttpGet]
-        //[Authorize(Roles = "admin")]
         public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
         {
             var products = await _productService.GetAllProductsAsync();
             return Ok(products);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{ids}")]
         [Authorize]
-        public async Task<ActionResult<Product>> GetProduct(int id)
+        public async Task<ActionResult<IEnumerable<Product>>> GetProducts([FromRoute] string ids)
         {
-            var product = await _productService.GetProductByIdAsync(id);
-            if (product == null)
+            var idList = ids.Split(',').Select(id => int.TryParse(id, out var result) ? result : (int?)null).Where(id => id.HasValue).Select(id => id.Value).ToList();
+
+            if (!idList.Any())
             {
-                return NotFound($"Product with ID {id} not found.");
+                return BadRequest("Invalid product IDs.");
             }
 
-            return Ok(product);
+            var products = await _productService.GetProductsByIdsAsync(idList);
+
+            if (products == null || !products.Any())
+            {
+                return NotFound("No products found for the provided IDs.");
+            }
+
+            return Ok(products);
         }
 
+
         [HttpPost]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "Admin,seller,operations")]
         public async Task<ActionResult<Product>> CreateProduct(Product product)
         {
             if (product == null)
@@ -47,11 +55,11 @@ namespace AjayDemoEcart.Controllers
             }
 
             var createdProduct = await _productService.CreateProductAsync(product);
-            return CreatedAtAction(nameof(GetProduct), new { id = createdProduct.Id }, createdProduct);
+            return CreatedAtAction(nameof(GetProducts), new { id = createdProduct.Id }, createdProduct);
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "Admin,operations,seller")]
         public async Task<IActionResult> UpdateProduct(int id, Product product)
         {
             if (id != product.Id)
@@ -69,7 +77,7 @@ namespace AjayDemoEcart.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "Admin,operations")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
             var success = await _productService.DeleteProductAsync(id);

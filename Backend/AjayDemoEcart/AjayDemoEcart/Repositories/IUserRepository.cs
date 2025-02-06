@@ -50,12 +50,18 @@ public class UserRepository : IUserRepositoryInterface
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
         if (user == null) return false;
 
-        _context.Users.Remove(user);
-        return await _context.SaveChangesAsync() > 0;
+        user.IsActive = false;  // Mark user as inactive (soft delete)
+        await _context.SaveChangesAsync();
+        return true;
     }
 
     public async Task<User> GetUserByUsernameAsync(string username)
     {
         return await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+    }
+
+    public async Task<User> GetUserByEmailAsync(string email)  // Add this method
+    {
+        return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
     }
 }

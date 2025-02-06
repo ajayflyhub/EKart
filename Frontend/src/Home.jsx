@@ -1,9 +1,8 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Carousel } from "antd";
 import CardGrid from "./components/cards";
 import { BannerImages } from "./assets/mockData";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchProducts } from "./redux/reducers/productReducer";
+import { useSelector } from "react-redux";
 
 const Home = () => {
   const contentStyle = {
@@ -12,14 +11,13 @@ const Home = () => {
     height: "400px",
     objectFit: "cover", // Prevents stretching
     display: "block",
-  }; 
-
-  const user = useSelector((state) => state.user.user);
-
+  };
+  const state = useSelector((state) => state);
+  console.log("casrt", state);
   return (
     <div className="bg-blue-100">
       <Carousel autoplaySpeed={2000} autoplay={true}>
-        {BannerImages.map((image,key) => {
+        {BannerImages.map((image, key) => {
           return (
             <div className="flex flex-col" key={key}>
               <img style={contentStyle} src={image.imageLink} alt="" />

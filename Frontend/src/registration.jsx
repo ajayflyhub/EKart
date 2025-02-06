@@ -1,10 +1,15 @@
-import React, { useEffect } from "react";
-import { Form, Input, Button, Typography, message } from "antd";
-import { LockOutlined, UserOutlined, MailOutlined } from "@ant-design/icons";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { Form, Input, Button, Typography, Spin } from "antd";
+import dayjs from "dayjs";
+import {
+  LockOutlined,
+  UserOutlined,
+  MailOutlined,
+  PhoneOutlined,
+} from "@ant-design/icons";
+import { useDispatch } from "react-redux";
 import { createUser } from "./redux/Actions/userActions";
-import { hashPassword } from "./utils/passwordHash";
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 
 const { Title } = Typography;
@@ -12,152 +17,187 @@ const { Title } = Typography;
 const Registration = () => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
-  const resetToken = [...Array(30)]
-  .map(() => Math.random().toString(36)[2])
-  .join('');
   const navigate = useNavigate();
-  const resetTokenExpires = new Date();
-  resetTokenExpires.setHours(resetTokenExpires.getHours() + 1);
-  const { user } = useSelector((state) => state.user);
-    const token = Cookies.get('jwtToken');
-  
-    useEffect(() => {
-      if (token) {
-        navigate('/');
-      }
-    }, [token, navigate]);
-  
+  const token = Cookies.get("jwtToken");
+
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [countdown, setCountdown] = useState(5); // Start countdown from 3 seconds
+
+  useEffect(() => {
+    if (token) {
+      navigate("/");
+    }
+  }, [token, navigate]);
+
+  useEffect(() => {
+    let timer;
+    if (isRegistering && countdown > 0) {
+      timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+    } else if (countdown === 0) {
+      navigate("/");
+    }
+    return () => clearTimeout(timer);
+  }, [isRegistering, countdown, navigate]);
 
   const onFinish = async (values) => {
     try {
-      const hashedPassword = await hashPassword(values.password);
-      const role = 'customer'
-      dispatch(
+      const role = "customer";
+      const resetTokenExpires = dayjs().add(1, "hour").toISOString();
+
+      setIsRegistering(true); // Start the loading state
+
+      await dispatch(
         createUser(
           values.username,
           values.email,
-          hashedPassword,
-          resetToken,
-          resetTokenExpires,
-          role
+          values.password,
+          role,
+          values.phoneNumber,
+          resetTokenExpires
         )
       );
 
-      message.success("Registration successful!");
       form.resetFields();
+
+      // Ensure the loader stays for at least 5 seconds before redirecting
+      await setTimeout(() => {
+        navigate("/");
+      }, 5000);
     } catch (error) {
       console.error("Error during registration:", error);
-      message.error("An error occurred during registration.");
+      setIsRegistering(false); // Reset loader if an error occurs
     }
   };
 
-  useEffect(()=> {
-    console.log("us231er",user)
-  },[user])
-
-  const onFinishFailed = (errorInfo) => {
-    console.error("Failed:", errorInfo);
-    message.error("Please correct the errors and try again.");
-  };
-
   return (
-    <div className="flex items-center justify-center min-h-screen bg-blue-100 h-auto w-full py-10">
+    <div className="flex items-center justify-center min-h-screen bg-blue-100 py-10">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <Title level={3} className="text-center mb-6">
-          Ekart Registration
-        </Title>
-        <Form
-          form={form}
-          name="registration"
-          layout="vertical"
-          onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
-          className="space-y-4"
-        >
-          <Form.Item
-            label={<span className="text-gray-700">Username</span>}
-            name="username"
-            rules={[{ required: true, message: "Please input your username!" }]}
-          >
-            <Input
-              prefix={<UserOutlined className="text-gray-400" />}
-              placeholder="Enter your username"
-              className="rounded-md"
-            />
-          </Form.Item>
-
-          <Form.Item
-            label={<span className="text-gray-700">Email</span>}
-            name="email"
-            rules={[
-              { required: true, message: "Please input your email!" },
-              { type: "email", message: "Please enter a valid email!" },
-            ]}
-          >
-            <Input
-              prefix={<MailOutlined className="text-gray-400" />}
-              placeholder="Enter your email"
-              className="rounded-md"
-            />
-          </Form.Item>
-
-          <Form.Item
-            label={<span className="text-gray-700">Password</span>}
-            name="password"
-            rules={[
-              { required: true, message: "Please input your password!" },
-              { min: 6, message: "Password must be at least 6 characters!" },
-            ]}
-          >
-            <Input.Password
-              prefix={<LockOutlined className="text-gray-400" />}
-              placeholder="Enter your password"
-              className="rounded-md"
-            />
-          </Form.Item>
-
-          <Form.Item
-            label={<span className="text-gray-700">Confirm Password</span>}
-            name="confirmPassword"
-            dependencies={["password"]}
-            rules={[
-              { required: true, message: "Please confirm your password!" },
-              ({ getFieldValue }) => ({
-                validator(_, value) {
-                  if (!value || getFieldValue("password") === value) {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject(
-                    new Error("The two passwords do not match!")
-                  );
-                },
-              }),
-            ]}
-          >
-            <Input.Password
-              prefix={<LockOutlined className="text-gray-400" />}
-              placeholder="Confirm your password"
-              className="rounded-md"
-            />
-          </Form.Item>
-
-          <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white rounded-md"
-            >
-              Register
-            </Button>
-          </Form.Item>
-
-          <div className="text-center text-gray-600">
-            Already have an account?{" "}
-            <a href="/login" className="text-blue-500">
-              Login here
-            </a>
+        {isRegistering ? (
+          <div className="text-center">
+            <Spin size="large" className="mb-4" />
+            <p className="text-lg text-gray-700 font-semibold">
+              Registration successful! Redirecting to home page in...{" "}
+              {countdown}
+            </p>
           </div>
-        </Form>
+        ) : (
+          <>
+            <Title level={3} className="text-center mb-6">
+              Ekart Registration
+            </Title>
+            <Form
+              form={form}
+              name="registration"
+              layout="vertical"
+              onFinish={onFinish}
+              className="space-y-4"
+            >
+              <Form.Item
+                name="username"
+                label="Username"
+                rules={[
+                  { required: true, message: "Please input your username!" },
+                ]}
+              >
+                <Input
+                  prefix={<UserOutlined className="text-gray-400" />}
+                  placeholder="Enter your username"
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="email"
+                label="Email"
+                rules={[
+                  { required: true, message: "Please input your email!" },
+                  { type: "email", message: "Please enter a valid email!" },
+                ]}
+              >
+                <Input
+                  prefix={<MailOutlined className="text-gray-400" />}
+                  placeholder="Enter your email"
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="phoneNumber"
+                label="Phone Number"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input your phone number!",
+                  },
+                  {
+                    pattern: /^[0-9]{10}$/,
+                    message: "Enter a valid 10-digit phone number!",
+                  },
+                ]}
+              >
+                <Input
+                  prefix={<PhoneOutlined className="text-gray-400" />}
+                  placeholder="Enter your phone number"
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="password"
+                label="Password"
+                rules={[
+                  { required: true, message: "Please input your password!" },
+                  {
+                    min: 6,
+                    message: "Password must be at least 6 characters!",
+                  },
+                ]}
+              >
+                <Input.Password
+                  prefix={<LockOutlined className="text-gray-400" />}
+                  placeholder="Enter your password"
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="confirmPassword"
+                label="Confirm Password"
+                dependencies={["password"]}
+                rules={[
+                  { required: true, message: "Please confirm your password!" },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (!value || getFieldValue("password") === value)
+                        return Promise.resolve();
+                      return Promise.reject(
+                        new Error("Passwords do not match!")
+                      );
+                    },
+                  }),
+                ]}
+              >
+                <Input.Password
+                  prefix={<LockOutlined className="text-gray-400" />}
+                  placeholder="Confirm your password"
+                />
+              </Form.Item>
+
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  className="w-full bg-blue-500 hover:bg-blue-600 text-white rounded-md"
+                >
+                  Register
+                </Button>
+              </Form.Item>
+
+              <div className="text-center text-gray-600">
+                Already have an account?{" "}
+                <a href="/login" className="text-blue-500">
+                  Login here
+                </a>
+              </div>
+            </Form>
+          </>
+        )}
       </div>
     </div>
   );

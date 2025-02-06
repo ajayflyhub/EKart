@@ -1,14 +1,10 @@
-﻿using AjayDemoEcart.Models;
-using AjayDemoEcart.Data;
+﻿using AjayDemoEcart.Data;
+using AjayDemoEcart.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AjayDemoEcart.Interfaces.RepositoryInterface;
 
 namespace AjayDemoEcart.Repositories
 {
-    public class OrderRepository : IOrderRepositoryInterface
+    public class OrderRepository : IOrderRepository
     {
         private readonly DataContext _context;
 
@@ -25,46 +21,36 @@ namespace AjayDemoEcart.Repositories
         public async Task<Order> GetOrderByIdAsync(int id)
         {
             return await _context.Orders.Include(o => o.User)
-                                        .FirstOrDefaultAsync(o => o.Id == id);
+                .FirstOrDefaultAsync(o => o.Id == id);
         }
 
         public async Task<IEnumerable<Order>> GetOrdersByUserIdAsync(int userId)
         {
-            return await _context.Orders.Where(o => o.UserId == userId)
-                                        .Include(o => o.User)
-                                        .ToListAsync();
+            return await _context.Orders.Include(o => o.User)
+                .Where(o => o.UserId == userId)
+                .ToListAsync();
         }
 
         public async Task<Order> CreateOrderAsync(Order order)
         {
-            if (order == null) return null;
-
-            _context.Orders.Add(order);
+            await _context.Orders.AddAsync(order);
             await _context.SaveChangesAsync();
             return order;
         }
 
-        public async Task<bool> UpdateOrderAsync(int id, Order order)
+        public async Task<bool> UpdateOrderStatusAsync(int id, string status)
         {
-            if (id != order.Id) return false;
-
-            _context.Entry(order).State = EntityState.Modified;
-
-            try
+            var existingOrder = await _context.Orders.FindAsync(id);
+            if (existingOrder == null)
             {
-                await _context.SaveChangesAsync();
+                return false;
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!OrderExists(id))
-                {
-                    return false;
-                }
-                else
-                {
-                    throw;
-                }
-            }
+             
+            existingOrder.Status = status;
+            Console.WriteLine(status);
+
+            _context.Orders.Update(existingOrder);
+            await _context.SaveChangesAsync();
 
             return true;
         }
@@ -79,12 +65,8 @@ namespace AjayDemoEcart.Repositories
 
             _context.Orders.Remove(order);
             await _context.SaveChangesAsync();
-            return true;
-        }
 
-        private bool OrderExists(int id)
-        {
-            return _context.Orders.Any(e => e.Id == id);
+            return true;
         }
     }
 }

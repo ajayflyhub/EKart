@@ -11,10 +11,11 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("dda88f75-eadb-4d15-8ec4-6e83a7d7486d")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("AjayDemoEcart")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+39c5084fed47212c2145decbb1715f3aff23df99")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a49f84f0b3b748b798e78a86c102cced8b15dcff")]
 [assembly: System.Reflection.AssemblyProductAttribute("AjayDemoEcart")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AjayDemoEcart")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

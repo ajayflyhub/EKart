@@ -10,6 +10,19 @@ public class CartService : ICartService
     {
         _cartRepository = cartRepository;
     }
+    public async Task<bool> ClearCartAsync(int userId)
+    {
+        var userCart = await _cartRepository.GetByUserIdAsync(userId);
+
+        if (userCart == null || !userCart.Any())
+        {
+            return false;
+        }
+
+        await _cartRepository.ClearCartAsync(userId);
+        return true;
+    }
+
 
     public async Task<IEnumerable<Cart>> GetAllCartsAsync()
     {

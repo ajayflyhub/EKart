@@ -10,4 +10,5 @@ public interface IUserRepositoryInterface
     Task<bool> UpdateUserAsync(int id, User user);
     Task<bool> DeleteUserAsync(int id);
     Task<User> GetUserByUsernameAsync(string username);
+    Task<User> GetUserByEmailAsync(string email);
 }

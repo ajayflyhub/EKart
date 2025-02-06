@@ -36,6 +36,7 @@ export const addToCartAsync = (productId, userId) => async (dispatch) => {
       );
       dispatch(addToCart(response.data));
       message.success('Item added to cart');
+      return true;
     }
   } catch (error) {
     message.error('Failed to add item to cart');
@@ -56,6 +57,22 @@ export const removeFromCartAsync = (productId, userId) => async (dispatch) => {
   } catch (error) {
     console.error('Error removing from cart:', error);
     message.error('Failed to remove item from cart');
+  }
+};
+
+export const clearCartAsync = (userId) => async (dispatch) => {
+  try {
+    const token = Cookies.get('jwtToken');
+    if (token) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/Carts/clearCart/${userId}`);
+      dispatch(fetchCart(userId)); // Optionally refresh the cart
+      message.success('Cart cleared successfully');
+      return true;
+    }
+  } catch (error) {
+    console.error('Error clearing cart:', error);
+    message.error('Failed to clear cart');
   }
 };
 

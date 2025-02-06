@@ -1,11 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
 
 const productSlice = createSlice({
   name: "products",
   initialState: {
-    products: [], // List of products
-    product: null, // Single product details
+    products: [],
+    product: null,
     loading: false,
     error: null,
   },
@@ -23,13 +22,51 @@ const productSlice = createSlice({
     },
     fetchProductRequest: (state) => {
       state.loading = true;
-      state.product = null; // Reset the product to avoid stale data
+      state.product = null;
     },
     fetchProductSuccess: (state, action) => {
       state.loading = false;
       state.product = action.payload;
     },
     fetchProductFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    updateProductRequest: (state) => {
+      state.loading = true;
+    },
+    updateProductSuccess: (state, action) => {
+      state.loading = false;
+      const index = state.products.findIndex((p) => p.id === action.payload.id);
+      if (index !== -1) {
+        state.products[index] = action.payload;
+      }
+      state.product = action.payload;
+    },
+    updateProductFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    deleteProductRequest: (state) => {
+      state.loading = true;
+    },
+    deleteProductSuccess: (state, action) => {
+      state.loading = false;
+      state.products = state.products.filter((p) => p.id !== action.payload);
+    },
+    deleteProductFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    // Add product actions
+    addProductRequest: (state) => {
+      state.loading = true;
+    },
+    addProductSuccess: (state, action) => {
+      state.loading = false;
+      state.products.push(action.payload); // Add the new product to the list
+    },
+    addProductFailure: (state, action) => {
       state.loading = false;
       state.error = action.payload;
     },
@@ -43,31 +80,15 @@ export const {
   fetchProductRequest,
   fetchProductSuccess,
   fetchProductFailure,
+  updateProductRequest,
+  updateProductSuccess,
+  updateProductFailure,
+  deleteProductRequest,
+  deleteProductSuccess,
+  deleteProductFailure,
+  addProductRequest,
+  addProductSuccess,
+  addProductFailure,
 } = productSlice.actions;
-
-// Thunk to fetch all products
-export const fetchProducts = () => async (dispatch) => {
-  dispatch(fetchProductsRequest());
-  try {
-    const response = await axios.get(
-      `${process.env.REACT_APP_API_BASE_URL}/Products`
-    );
-    dispatch(fetchProductsSuccess(response.data));
-  } catch (error) {
-    dispatch(fetchProductsFailure(error.message));
-  }
-};
-
-export const fetchProductById = (id) => async (dispatch) => {
-  dispatch(fetchProductRequest());
-  try {
-    const response = await axios.get(
-      `${process.env.REACT_APP_API_BASE_URL}/Products/${id}`
-    );
-    dispatch(fetchProductSuccess(response.data));
-  } catch (error) {
-    dispatch(fetchProductFailure(error.message));
-  }
-};
 
 export default productSlice.reducer;

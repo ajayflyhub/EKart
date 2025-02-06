@@ -1,190 +1,221 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-
-// Mock user data
-const user = {
-  name: "John Doe",
-  role: "admin", // Change to "admin" for admin
-  permissions: {
-    viewData: true,
-    editBasicInfo: true,
-  },
-};
-
-
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import Cookies from "js-cookie";
+import { Button, Form } from "antd";
+import {
+  fetchOrders,
+  getAllOrders,
+  updateOrder,
+} from "./redux/Actions/orderActions";
+import { fetchAddresses } from "./redux/Actions/addressActions";
+import {
+  deleteUser,
+  getAllUsers,
+  updateUser,
+} from "./redux/Actions/userActions";
+import { fetchProducts } from "./redux/Actions/productActions";
+import Overview from "./components/dashboard/overview";
+import Details from "./components/dashboard/details";
+import Support from "./components/dashboard/support";
+import ManageProducts from "./components/dashboard/manageProducts";
+import ManageCustomers from "./components/dashboard/manageCustomers";
+import SideMenu from "./components/dashboard/sideMenu";
+import WalletTable from "./components/walletTable";
+import { getTransactionsAsyncByUserId } from "./redux/Actions/walletActions";
+import AdminWalletTable from "./components/dashboard/wallet";
+import OrdersTable from "./components/dashboard/orders";
 
 const Dashboard = () => {
-  const user = useSelector((state) => state.user.user);
-  const [activeTab, setActiveTab] = useState('Overview');
-  useEffect(()=> {
-    console.log("us231er",user)
-  },[user])
+  const user = useSelector((state) => state.user?.user);
+  const state = useSelector((state) => state);
+  const allUsersStateData = state?.user?.users;
+  const orderStateToCustomer = useSelector((state) => state.orders?.orders);
+  const AllordersStateToAdmin = useSelector((state) => state.orders?.orders);
+  const Allproducts = useSelector((state) => state.products?.products);
+  const wallet = useSelector((state) => state.wallet.wallet);
+  const transactions = useSelector((state) => state.wallet.transactions) || [];
+  const dispatch = useDispatch();
+  const [activeTab, setActiveTab] = useState("Overview");
+  const [orders, setOrders] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
+  const token = Cookies?.get("jwtToken");
+  const decodedToken = JSON.parse(atob(token?.split(".")[1]));
+  const role = decodedToken?.role;
+  const userId = decodedToken.userId;
+  const [form] = Form.useForm();
+  const [details, setDetails] = useState({
+    username: user?.username || "",
+    email: user?.email || "",
+    address: user?.address || "",
+    role: user?.role || "",
+  });
 
+  useEffect(() => {
+    if (user && user?.role === "customer") {
+      dispatch(fetchOrders(userId));
+      dispatch(fetchAddresses(userId));
+      dispatch(getTransactionsAsyncByUserId(userId));
+    }
+    if ((user && user?.role === "Admin")) {
+      dispatch(getAllUsers());
+      dispatch(getAllOrders());
+      dispatch(fetchProducts());
+    }
+    if(user?.role === "operations"){
+      dispatch(fetchProducts());
+    }
+  }, [user, dispatch, userId]);
+
+  useEffect(() => {
+    setDetails(user);
+  }, [user]);
+
+  useEffect(() => {
+    if (role === "customer") {
+      setOrders(orderStateToCustomer);
+    } else if (role === "Admin") {
+      setAllUsers(allUsersStateData?.filter((user) => user.isActive));
+      setOrders(AllordersStateToAdmin);
+      setAllProducts(Allproducts);
+    }
+    else if(role === 'operations'){
+      setAllProducts(Allproducts);
+    }
+  }, [
+    role,
+    user,
+    orderStateToCustomer,
+    AllordersStateToAdmin,
+    allUsersStateData,
+    Allproducts,
+  ]);
+
+  const handleSave = (userId, updatedUserDetails) => {
+    dispatch(updateUser(userId, updatedUserDetails));
+    console.log("Saving user details:", updatedUserDetails);
+  };
+
+  useEffect(() => {
+    console.log("allProducts", allProducts);
+  }, [allProducts]);
+  const handleFieldChange = (e, productId, field) => {
+    console.log("wered", e?.target?.value, field, productId);
+    setAllProducts((prevProducts) =>
+      prevProducts.map((product) =>
+        product.id === productId
+          ? { ...product, [field]: e.target.value }
+          : product
+      )
+    );
+  };
+
+  const handleUpdateUser = async (user) => {
+    console.log("Updating user:", user);
+    const updatedUser = allUsers.find((u) => u.id === user.id);
+
+    if (updatedUser) {
+      dispatch(updateUser(updatedUser.id, user)); // Use `user`, not `updatedUser`
+    } else {
+      console.error("User not found");
+    }
+  };
+
+  const handleDeleteUser = async (userId) => {
+    const deactivateUser = await dispatch(deleteUser(userId));
+    deactivateUser && dispatch(getAllUsers());
+  };
+
+  const handleOrderSaveChanges = (orderId, order) => {
+    console.log("asdqweqdx", orderId, order);
+    dispatch(updateOrder(orderId, order));
+  };
+
+  // Render content based on active tab
   const renderContent = () => {
     switch (activeTab) {
-      case 'Overview':
+      case "Overview":
         return (
-          <div>
-            <h2 className="text-2xl font-bold mb-4">Overview</h2>
-            <div className='grid grid-cols-2 gap-12 self-center'>
-            <div className="w-full mx-auto bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-6"></div>
-            <div className="w-full mx-auto bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-6"></div>
-            <div className="w-full mx-auto bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-6"></div>
-            <div className="w-full mx-auto bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-6"></div>
-            </div>
-          
-          </div>
+          <Overview
+            user={user}
+            orders={orders}
+            role={role}
+            allUsersStateData={allUsersStateData}
+            Allproducts={state}
+          />
         );
-      case 'Manage Products':
-        return user.role === 'admin' ? (
-          <div>
-            <h2 className="text-2xl font-bold mb-4">Manage Products</h2>
-            <table className="table-auto w-full bg-white shadow-md rounded">
-              <thead>
-                <tr>
-                  <th className="border px-4 py-2">Product Name</th>
-                  <th className="border px-4 py-2">Price</th>
-                  <th className="border px-4 py-2">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="border px-4 py-2">Sample Product</td>
-                  <td className="border px-4 py-2">$100</td>
-                  <td className="border px-4 py-2">
-                    <button className="text-blue-500">Edit</button> | 
-                    <button className="text-red-500">Delete</button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        ) : null;
-      case 'Manage Users':
-        return user.role === 'admin' ? (
-          <div>
-            <h2 className="text-2xl font-bold mb-4">Manage Users</h2>
-            <table className="table-auto w-full bg-white shadow-md rounded">
-              <thead>
-                <tr>
-                  <th className="border px-4 py-2">User Name</th>
-                  <th className="border px-4 py-2">Email</th>
-                  <th className="border px-4 py-2">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="border px-4 py-2">Jane Doe</td>
-                  <td className="border px-4 py-2">jane.doe@example.com</td>
-                  <td className="border px-4 py-2">
-                    <button className="text-blue-500">Edit</button> | 
-                    <button className="text-red-500">Delete</button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        ) : null;
-      case 'Orders':
+
+      case "Orders":
         return (
-          <div>
-            <h2 className="text-2xl font-bold mb-4">{user.role === 'admin' ? "All Orders" : "My Orders"}</h2>
-            <table className="table-auto w-full bg-white shadow-md rounded">
-              <thead>
-                <tr>
-                  <th className="border px-4 py-2">Order ID</th>
-                  <th className="border px-4 py-2">Amount</th>
-                  <th className="border px-4 py-2">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="border px-4 py-2">ORD123</td>
-                  <td className="border px-4 py-2">$200</td>
-                  <td className="border px-4 py-2">Shipped</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <OrdersTable
+            role={role}
+            orders={orders}
+            handleOrderSaveChanges={handleOrderSaveChanges}
+            setOrders={setOrders}
+          />
         );
-      case 'Profile':
-        return user.role === 'user' ? (
+
+      case "Details":
+        return (
+          <Details
+            details={details}
+            handleSave={handleSave}
+            setDetails={setDetails}
+          />
+        );
+      case "Support":
+        return role === "customer" ? <Support /> : null;
+
+      case "Wallet":
+        return role === "customer" ? (
+          <WalletTable transactions={transactions} wallet={wallet} />
+        ) : (
+          <AdminWalletTable transactions={transactions} wallet={wallet} />
+        );
+
+      case "Manage Products":
+        return role === "Admin" || role === "operations" ? (
+          <ManageProducts
+            allProducts={allProducts}
+            setAllProducts={setAllProducts}
+          />
+        ) : null;
+
+      case "Manage Customers":
+        return role === "Admin" ? (
+          <ManageCustomers
+            allUsers={allUsers}
+            handleFieldChange={handleFieldChange}
+            handleDeleteUser={handleDeleteUser}
+            handleUpdateUser={handleUpdateUser}
+          />
+        ) : null;
+
+      case "Admin Info":
+        return role === "Admin" ? (
           <div>
-            <h2 className="text-2xl font-bold mb-4">Edit Profile</h2>
-            <form>
-              <label className="block mb-2">Name:</label>
-              <input
-                type="text"
-                className="border px-4 py-2 mb-4 w-full"
-                placeholder="Enter your name"
-              />
-              <button className="bg-blue-500 text-white px-4 py-2 rounded">Save</button>
-            </form>
+            <h2 className="text-2xl font-bold mb-4">Admin Info</h2>
+            <p>
+              <strong>Username:</strong> {user.name}
+            </p>
+            <p>
+              <strong>Email:</strong> {user.email}
+            </p>
           </div>
         ) : null;
-      case 'Cart':
-        return user.role === 'user' ? (
-          <div>
-            <h2 className="text-2xl font-bold mb-4">My Cart</h2>
-            <p>You have 2 items in your cart.</p>
-          </div>
-        ) : null;
+
       default:
         return <p>Select a section from the side menu.</p>;
     }
   };
 
   return (
-    <div className="min-h-screen flex">
-      <aside className="bg-gray-100 w-64 p-4">
-        <nav>
-          <ul>
-            <li>
-              <button
-                onClick={() => setActiveTab('Overview')}
-                className={`block w-full text-left px-4 py-2 ${activeTab === 'Overview' ? 'bg-blue-200' : ''}`}
-              >
-                Overview
-              </button>
-            </li>
-            {user.role === 'admin' && (
-              <>
-                <li>
-                  <button onClick={() => setActiveTab('Manage Products')} className={`block w-full text-left px-4 py-2 ${activeTab === 'Manage Products' ? 'bg-blue-200' : ''}`}>
-                    Manage Products
-                  </button>
-                </li>
-                <li>
-                  <button onClick={() => setActiveTab('Manage Users')} className={`block w-full text-left px-4 py-2 ${activeTab === 'Manage Users' ? 'bg-blue-200' : ''}`}>
-                    Manage Users
-                  </button>
-                </li>
-              </>
-            )}
-            <li>
-              <button onClick={() => setActiveTab('Orders')} className={`block w-full text-left px-4 py-2 ${activeTab === 'Orders' ? 'bg-blue-200' : ''}`}>
-                {user.role === 'admin' ? "All Orders" : "My Orders"}
-              </button>
-            </li>
-            {user.role === 'user' && (
-              <>
-                <li>
-                  <button onClick={() => setActiveTab('Profile')} className={`block w-full text-left px-4 py-2 ${activeTab === 'Profile' ? 'bg-blue-200' : ''}`}>
-                    Edit Profile
-                  </button>
-                </li>
-                <li>
-                  <button onClick={() => setActiveTab('Cart')} className={`block w-full text-left px-4 py-2 ${activeTab === 'Cart' ? 'bg-blue-200' : ''}`}>
-                    My Cart
-                  </button>
-                </li>
-              </>
-            )}
-          </ul>
-        </nav>
-      </aside>
-      <main className="flex-1 p-6">{renderContent()}</main>
-    </div>
+    <SideMenu
+      setActiveTab={setActiveTab}
+      activeTab={activeTab}
+      role={role}
+      renderContent={renderContent}
+    />
   );
 };
 

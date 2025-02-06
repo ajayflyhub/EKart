@@ -1,6 +1,7 @@
 ﻿using AjayDemoEcart.Interfaces.ServicesInterface;
 using AjayDemoEcart.Models;
 using AjayDemoEcart.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -18,6 +19,13 @@ namespace AjayDemoEcart.Services
         public async Task<IEnumerable<Product>> GetAllProductsAsync()
         {
             return await _productRepository.GetAllAsync();
+        }
+
+        public async Task<IEnumerable<Product>> GetProductsByIdsAsync(List<int> ids)
+        {
+            return await _productRepository.GetAllAsync().ContinueWith(task =>
+                task.Result.Where(p => ids.Contains(p.Id)).ToList()
+            );
         }
 
         public async Task<Product> GetProductByIdAsync(int id)
