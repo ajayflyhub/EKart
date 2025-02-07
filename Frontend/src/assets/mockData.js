@@ -3,6 +3,7 @@ import ecom2 from './BannerImages/ecom2.jpg';
 import ecom3 from './BannerImages/ecom3.jpg';
 import ecom4 from './BannerImages/ecom4.jpg';
 import ecom5 from './BannerImages/ecom5.jpg';
+import eKartLogoVideo from './logo/EKART.mp4'
 
 export const products = [
     { id: 1, name: "Lipstick", description: "Red Lipstick", price: "$100", imageLink: '/assets/products/Lipstick.jpg' },
@@ -19,3 +20,5 @@ export const BannerImages = [
     {imageLink:ecom4},
     {imageLink:ecom5}
 ]
+
+export default eKartLogoVideo;

@@ -63,6 +63,7 @@ export const updateAddress = (addressId, updatedData) => async (dispatch) => {
     
     dispatch(updateAddressSuccess(response.data));
     message.success("Address updated successfully!");
+    return true
   } catch (error) {
     dispatch(updateAddressFailure(error.response?.data?.message || error.message));
     message.error("Failed to update address.");

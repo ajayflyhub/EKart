@@ -37,7 +37,7 @@ const CartPage = () => {
 
   useEffect(() => {
     userId && dispatch(fetchCart(userId));
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     setFilteredProducts(cart);

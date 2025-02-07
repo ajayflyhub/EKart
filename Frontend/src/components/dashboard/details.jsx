@@ -6,6 +6,7 @@ import {
   updateAddress,
   fetchAddresses,
 } from "../../redux/Actions/addressActions";
+import { userId } from "../../utils/cookies";
 
 function Details({ details, handleSave, setDetails }) {
   const user = useSelector((state) => state.user?.user);
@@ -31,13 +32,16 @@ function Details({ details, handleSave, setDetails }) {
     handleSave(user?.id, { ...user, ...values });
   };
 
-  const onAddressSubmit = (addressValues) => {
+  const onAddressSubmit = async (addressValues) => {
     if (editingAddress) {
       const updatedAddress = {
         ...addressValues,
         id: editingAddress.id, // Ensure the address id is included for updating
       };
-      dispatch(updateAddress(editingAddress.id,updatedAddress)); // Assuming updateAddress dispatches the action to update
+      const success = await dispatch(
+        updateAddress(editingAddress.id, updatedAddress)
+      ); // Assuming updateAddress dispatches the action to update
+      dispatch(fetchAddresses(user?.id));
       setEditingAddress(null); // Clear the editing state
     } else {
       const addressPayload = {
@@ -54,7 +58,7 @@ function Details({ details, handleSave, setDetails }) {
   };
 
   const onEditAddress = (address) => {
-    console.log("add23123ress",address)
+    console.log("add23123ress", address);
     addressForm.setFieldsValue(address);
     setEditingAddress(address);
   };
@@ -193,7 +197,9 @@ function Details({ details, handleSave, setDetails }) {
       {/* Address List */}
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
         <div className="mt-6">
-        <h2 className="text-xl font-semibold mb-6 text-center text-blue-600">Your Addresses</h2>
+          <h2 className="text-xl font-semibold mb-6 text-center text-blue-600">
+            Your Addresses
+          </h2>
           {addresses?.length ? (
             <>
               <ul className="list-none mt-4 space-y-4">

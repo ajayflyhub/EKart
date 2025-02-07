@@ -46,7 +46,8 @@ const Registration = () => {
 
       setIsRegistering(true); // Start the loading state
 
-      await dispatch(
+      // Dispatch the createUser action and wait for the response
+      const response = await dispatch(
         createUser(
           values.username,
           values.email,
@@ -57,12 +58,17 @@ const Registration = () => {
         )
       );
 
-      form.resetFields();
+      if (response) {
+        form.resetFields();
 
-      // Ensure the loader stays for at least 5 seconds before redirecting
-      await setTimeout(() => {
+        // Ensure the loader stays for at least 5 seconds before redirecting
+        await new Promise((resolve) => setTimeout(resolve, 5000));
         navigate("/");
-      }, 5000);
+      } else {
+        // Handle cases where there is no response or something went wrong
+        console.error("Registration failed: No response from server");
+        setIsRegistering(false); // Reset loader if registration fails
+      }
     } catch (error) {
       console.error("Error during registration:", error);
       setIsRegistering(false); // Reset loader if an error occurs

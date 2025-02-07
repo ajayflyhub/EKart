@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchUser } from "../redux/Actions/userActions";
 import { fetchCart } from "../redux/Actions/cartActions";
 import { getWalletAsync } from "../redux/Actions/walletActions";
+import ekartLogo from "../assets/logo/logoekart.png";
 
 const Header = ({ onNavigate, onLogout }) => {
   const dispatch = useDispatch();
@@ -95,17 +96,17 @@ const Header = ({ onNavigate, onLogout }) => {
     <div className="fixed top-0 bg-white shadow-md w-full z-10">
       <div className="px-10 py-2 flex justify-between items-center">
         {/* Logo */}
-        <div className="text-xl font-bold text-[#364d79]">
-          <Link to="/">E-kart</Link>
-        </div>
+        <Link to="/"  className="text-xl font-bold text-[#364d79]">
+          <img src={ekartLogo} alt="EKART" className="w-[45px] h-[35px]" />
+        </Link>
 
         <div className="flex items-center gap-4 text-[#364d79] font-bold">
-          <nav className="space-x-4">
+          {/* <nav className="space-x-4">
             <Link to="/" className="hover:underline">
               Home
             </Link>
             {renderNavigationLinks()}
-          </nav>
+          </nav> */}
 
           {/* Wallet Balance */}
           {user && (
