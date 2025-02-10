@@ -164,17 +164,11 @@ const AdminWalletTable = ({ transactions }) => {
     },
     {
       title: "Description",
-      dataIndex: "description",
-      key: "description",
-      render: (_, record) => (
-        <span
-          className={
-            record.transactionType === "CREDIT"
-              ? "text-green-500"
-              : "text-red-500"
-          }
-        >
-          {record.transactionType === "CREDIT" ? "Deposit" : "Deduct"}
+      dataIndex: "type",
+      key: "type",
+      render: (record) => (
+        <span className={record === "Load" ? "text-green-500" : "text-red-500"}>
+          {record === "Load" ? "Deposit" : "Deduct"}
         </span>
       ),
     },
@@ -241,7 +235,7 @@ const AdminWalletTable = ({ transactions }) => {
   ];
 
   return (
-    <div className="container mx-auto p-6 flex-col">
+    <div className="container mx-auto pb-6 flex-col">
       <div className="flex justify-between items-center">
         <Card className="shadow-lg h-fit">
           <h2 className="text-xl font-bold text-[#364d79] text-center">
@@ -289,7 +283,13 @@ const AdminWalletTable = ({ transactions }) => {
       >
         <Table
           dataSource={
-            selectedMode === "Wallet" ? filteredWallets : filteredTransactions
+            selectedMode === "Wallet"
+              ? filteredWallets
+              : [...filteredTransactions].sort(
+                  (a, b) =>
+                    new Date(b.createdAt).getTime() -
+                    new Date(a.createdAt).getTime()
+                )
           }
           columns={
             selectedMode === "Wallet" ? columnsWallets : columnsTransactions

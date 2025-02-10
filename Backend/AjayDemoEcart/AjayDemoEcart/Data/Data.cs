@@ -1,5 +1,6 @@
 ﻿using AjayDemoEcart.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace AjayDemoEcart.Data
 {
@@ -25,6 +26,7 @@ namespace AjayDemoEcart.Data
         {
             optionsBuilder.UseSqlServer(configuration.GetConnectionString("EKartConnection"));
             base.OnConfiguring(optionsBuilder);
+            optionsBuilder.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -39,6 +41,7 @@ namespace AjayDemoEcart.Data
                 .HasOne(a => a.User)
                 .WithMany()
                 .HasForeignKey(a => a.UserId);
+
 
             //// Wallet Configuration
             //modelBuilder.Entity<Wallet>(entity =>
@@ -183,113 +186,113 @@ namespace AjayDemoEcart.Data
          });
 
 
-            modelBuilder.Entity<User>().HasData(
-       new User
-       {
-           Id = 3,
-           Username = "Ajaya",
-           Email = "ajay.12223@gmail.com",
-           PasswordHash = "123456",
-           Address = null,
-           PhoneNumber = null,
-           Role = "customer",
-           ResetToken = "i69qsy6ajchi19p4kxmqite7jcky1l",
-           ResetTokenExpires = DateTime.Parse("2025-01-21 11:50:27.3150000"),
-           IsActive = false
-       },
-       new User
-       {
-           Id = 6,
-           Username = "AjayBL",
-           Email = "ajay1234@gmail.com",
-           PasswordHash = null,
-           Address = null,
-           PhoneNumber = null,
-           Role = "customer",
-           ResetToken = "6iz9u50zb4doqmgex73mcr7r8mdo3k",
-           ResetTokenExpires = DateTime.Parse("2025-01-23 10:15:25.1390000"),
-           IsActive = false
-       },
-       new User
-       {
-           Id = 7,
-           Username = "demouser",
-           Email = "demo@dem2o.com",
-           PasswordHash = null,
-           Address = null,
-           PhoneNumber = null,
-           Role = "customer",
-           ResetToken = "i9j13q8qz7vsclhwdhf1zkektr1cbm",
-           ResetTokenExpires = DateTime.Parse("2025-01-23 11:10:05.4130000"),
-           IsActive = false
-       },
-       new User
-       {
-           Id = 8,
-           Username = "AJay",
-           Email = "1234@g.com",
-           PasswordHash = "$2a$11$xzPQ1ALvl9x6/AeQwejoxOrrHJ7XdK0nPN/TKqfMDshQ9ehMt2aaO",
-           Address = null,
-           PhoneNumber = null,
-           Role = "customer",
-           ResetToken = "gobsqho32nmhcbchveyh6tchwvygo6",
-           ResetTokenExpires = DateTime.Parse("2025-01-23 11:19:45.5530000"),
-           IsActive = true
-       },
-       new User
-       {
-           Id = 9,
-           Username = "ajaygrt",
-           Email = "ajaygrt@gmail.com",
-           PasswordHash = "ajaygrt",
-           Address = null,
-           PhoneNumber = null,
-           Role = "customer",
-           ResetToken = "13kmka9oxb6xhjh0qxsffc6113b1to",
-           ResetTokenExpires = DateTime.Parse("2025-01-23 11:28:58.8830000"),
-           IsActive = true
-       },
-       new User
-       {
-           Id = 10,
-           Username = "ajaygrt1",
-           Email = "ajaygrt1@gmail.com",
-           PasswordHash = null,
-           Address = null,
-           PhoneNumber = null,
-           Role = "customer",
-           ResetToken = "2k3o4xqed1vibgqq4vmgv1mq2pv6ql",
-           ResetTokenExpires = DateTime.Parse("2025-01-23 11:30:28.4950000"),
-           IsActive = false
-       },
-       new User
-       {
-           Id = 11,
-           Username = "admin",
-           Email = "admin@ekart2.com",
-           PasswordHash = "$2a$11$F1tSxVALONcsb5FUfC84lOHVOepsvoGzFBjMQX0MKcS/SiJ20F/P.",
-           Address = null,
-           PhoneNumber = null,
-           Role = "Admin",
-           ResetToken = "6n9kljl3qixfuoe4gq1atq6nwanc47",
-           ResetTokenExpires = DateTime.Parse("2025-01-23 11:32:57.5280000"),
-           IsActive = true
-       },
-       // Continue adding all other users...
-       new User
-       {
-           Id = 18,
-           Username = "ajay456",
-           Email = "k123@gmail.com",
-           PasswordHash = "$2a$11$hn1qnEEpy2Rf2RdPHXO.HOUADVxgYQLYpgBu3FDT1oA.UD8ENV4Xi",
-           Address = "234567",
-           PhoneNumber = "1234567333",
-           Role = "customer",
-           ResetToken = "a344ev0382k45yin8geft33aqgjosn",
-           ResetTokenExpires = DateTime.Parse("2025-01-27 13:35:25.2430000"),
-           IsActive = true
-       }
-   );
+            //         modelBuilder.Entity<User>().HasData(
+            //    new User
+            //    {
+            //        Id = 3,
+            //        Username = "Ajaya",
+            //        Email = "ajay.12223@gmail.com",
+            //        PasswordHash = "123456",
+            //        Address = null,
+            //        PhoneNumber = null,
+            //        Role = "customer",
+            //        ResetToken = "i69qsy6ajchi19p4kxmqite7jcky1l",
+            //        ResetTokenExpires = DateTime.Parse("2025-01-21 11:50:27.3150000"),
+            //        IsActive = false
+            //    },
+            //    new User
+            //    {
+            //        Id = 6,
+            //        Username = "AjayBL",
+            //        Email = "ajay1234@gmail.com",
+            //        PasswordHash = null,
+            //        Address = null,
+            //        PhoneNumber = null,
+            //        Role = "customer",
+            //        ResetToken = "6iz9u50zb4doqmgex73mcr7r8mdo3k",
+            //        ResetTokenExpires = DateTime.Parse("2025-01-23 10:15:25.1390000"),
+            //        IsActive = false
+            //    },
+            //    new User
+            //    {
+            //        Id = 7,
+            //        Username = "demouser",
+            //        Email = "demo@dem2o.com",
+            //        PasswordHash = null,
+            //        Address = null,
+            //        PhoneNumber = null,
+            //        Role = "customer",
+            //        ResetToken = "i9j13q8qz7vsclhwdhf1zkektr1cbm",
+            //        ResetTokenExpires = DateTime.Parse("2025-01-23 11:10:05.4130000"),
+            //        IsActive = false
+            //    },
+            //    new User
+            //    {
+            //        Id = 8,
+            //        Username = "AJay",
+            //        Email = "1234@g.com",
+            //        PasswordHash = "$2a$11$xzPQ1ALvl9x6/AeQwejoxOrrHJ7XdK0nPN/TKqfMDshQ9ehMt2aaO",
+            //        Address = null,
+            //        PhoneNumber = null,
+            //        Role = "customer",
+            //        ResetToken = "gobsqho32nmhcbchveyh6tchwvygo6",
+            //        ResetTokenExpires = DateTime.Parse("2025-01-23 11:19:45.5530000"),
+            //        IsActive = true
+            //    },
+            //    new User
+            //    {
+            //        Id = 9,
+            //        Username = "ajaygrt",
+            //        Email = "ajaygrt@gmail.com",
+            //        PasswordHash = "ajaygrt",
+            //        Address = null,
+            //        PhoneNumber = null,
+            //        Role = "customer",
+            //        ResetToken = "13kmka9oxb6xhjh0qxsffc6113b1to",
+            //        ResetTokenExpires = DateTime.Parse("2025-01-23 11:28:58.8830000"),
+            //        IsActive = true
+            //    },
+            //    new User
+            //    {
+            //        Id = 10,
+            //        Username = "ajaygrt1",
+            //        Email = "ajaygrt1@gmail.com",
+            //        PasswordHash = null,
+            //        Address = null,
+            //        PhoneNumber = null,
+            //        Role = "customer",
+            //        ResetToken = "2k3o4xqed1vibgqq4vmgv1mq2pv6ql",
+            //        ResetTokenExpires = DateTime.Parse("2025-01-23 11:30:28.4950000"),
+            //        IsActive = false
+            //    },
+            //    new User
+            //    {
+            //        Id = 11,
+            //        Username = "admin",
+            //        Email = "admin@ekart2.com",
+            //        PasswordHash = "$2a$11$F1tSxVALONcsb5FUfC84lOHVOepsvoGzFBjMQX0MKcS/SiJ20F/P.",
+            //        Address = null,
+            //        PhoneNumber = null,
+            //        Role = "Admin",
+            //        ResetToken = "6n9kljl3qixfuoe4gq1atq6nwanc47",
+            //        ResetTokenExpires = DateTime.Parse("2025-01-23 11:32:57.5280000"),
+            //        IsActive = true
+            //    },
+            //    // Continue adding all other users...
+            //    new User
+            //    {
+            //        Id = 18,
+            //        Username = "ajay456",
+            //        Email = "k123@gmail.com",
+            //        PasswordHash = "$2a$11$hn1qnEEpy2Rf2RdPHXO.HOUADVxgYQLYpgBu3FDT1oA.UD8ENV4Xi",
+            //        Address = "234567",
+            //        PhoneNumber = "1234567333",
+            //        Role = "customer",
+            //        ResetToken = "a344ev0382k45yin8geft33aqgjosn",
+            //        ResetTokenExpires = DateTime.Parse("2025-01-27 13:35:25.2430000"),
+            //        IsActive = true
+            //    }
+            //);
 
 
             // Seed data for Wallets
@@ -332,5 +335,18 @@ namespace AjayDemoEcart.Data
             //    }
             //);
         }
+
+        public override int SaveChanges()
+        {
+            foreach (var entry in ChangeTracker.Entries<Product>())
+            {
+                if (entry.State == EntityState.Modified)
+                {
+                    entry.Entity.UpdatedAt = DateTime.UtcNow;
+                }
+            }
+            return base.SaveChanges();
+        }
+
     }
 }

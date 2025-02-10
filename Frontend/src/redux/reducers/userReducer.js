@@ -4,6 +4,7 @@ const userSlice = createSlice({
   name: "user",
   initialState: {
     user: null,
+    users: [], // Added to manage multiple users
     loading: false,
     error: null,
   },
@@ -63,7 +64,7 @@ const userSlice = createSlice({
     deleteUserRequest: (state) => {
       state.loading = true;
     },
-    deleteUserSuccess: (state, action) => {
+    deleteUserSuccess: (state) => {
       state.loading = false;
       state.user = null; // or implement logic for user removal
     },
@@ -81,6 +82,36 @@ const userSlice = createSlice({
       state.user = action.payload;
     },
     loginFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+
+    // Activate user actions
+    activateUserRequest: (state) => {
+      state.loading = true;
+    },
+    activateUserSuccess: (state, action) => {
+      state.loading = false;
+      state.users = state.users.map((user) =>
+        user.id === action.payload.id ? { ...user, active: true } : user
+      );
+    },
+    activateUserFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+
+    // Deactivate user actions
+    deactivateUserRequest: (state) => {
+      state.loading = true;
+    },
+    deactivateUserSuccess: (state, action) => {
+      state.loading = false;
+      state.users = state.users.map((user) =>
+        user.id === action.payload.id ? { ...user, active: false } : user
+      );
+    },
+    deactivateUserFailure: (state, action) => {
       state.loading = false;
       state.error = action.payload;
     },
@@ -106,6 +137,12 @@ export const {
   loginRequest,
   loginSuccess,
   loginFailure,
+  activateUserRequest,
+  activateUserSuccess,
+  activateUserFailure,
+  deactivateUserRequest,
+  deactivateUserSuccess,
+  deactivateUserFailure,
 } = userSlice.actions;
 
 export default userSlice.reducer;

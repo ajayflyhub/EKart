@@ -39,10 +39,12 @@ const Header = ({ onNavigate, onLogout }) => {
       <Link to="/products" className="hover:underline">
         Products
       </Link>
-      {user?.role !== "operations" && (
+      {user?.role !== "operations" ? (
         <Link to="/orders" className="hover:underline">
           My Orders
         </Link>
+      ) : (
+        ""
       )}
     </>
   );
@@ -96,7 +98,7 @@ const Header = ({ onNavigate, onLogout }) => {
     <div className="fixed top-0 bg-white shadow-md w-full z-10">
       <div className="px-10 py-2 flex justify-between items-center">
         {/* Logo */}
-        <Link to="/"  className="text-xl font-bold text-[#364d79]">
+        <Link to="/" className="text-xl font-bold text-[#364d79]">
           <img src={ekartLogo} alt="EKART" className="w-[45px] h-[35px]" />
         </Link>
 
@@ -107,7 +109,7 @@ const Header = ({ onNavigate, onLogout }) => {
             </Link>
             {renderNavigationLinks()}
           </nav> */}
-
+          {renderCustomerLinks()}
           {/* Wallet Balance */}
           {user && (
             <div className="flex gap-4 items-center">

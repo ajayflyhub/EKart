@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 public class User
 {
@@ -12,11 +13,20 @@ public class User
     public string? PasswordHash { get; set; }
 
     public string? Address { get; set; }
+
     public string? PhoneNumber { get; set; }
+
     public string Role { get; set; }
 
     public string? ResetToken { get; set; }
 
     public DateTime? ResetTokenExpires { get; set; }
+
     public bool IsActive { get; set; } = true; // Default to active
+
+    [Required]
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow; // Auto-set on creation
+
+    [Required]
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow; // Auto-set on creation & update
 }

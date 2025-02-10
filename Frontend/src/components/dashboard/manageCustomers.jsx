@@ -2,7 +2,12 @@ import { useState } from "react";
 import { Table, Button, Input } from "antd";
 import React from "react";
 
-const ManageCustomers = ({ allUsers, handleDeleteUser, handleUpdateUser }) => {
+const ManageCustomers = ({
+  allUsers,
+  handleDeleteUser,
+  handleUpdateUser,
+  handleUserToggle,
+}) => {
   const [editingUserId, setEditingUserId] = useState(null);
   const [editedUsers, setEditedUsers] = useState({});
 
@@ -14,12 +19,19 @@ const ManageCustomers = ({ allUsers, handleDeleteUser, handleUpdateUser }) => {
     }));
   };
 
+  console.log("allUsers123",allUsers)
+
   const handleSave = (user) => {
     if (editedUsers[user.id]) {
       const updatedUser = { ...user, ...editedUsers[user.id] };
       handleUpdateUser(updatedUser);
     }
     setEditingUserId(null);
+  };
+
+  const handleToggleUserStatus = (userId) => {
+    console.log("sadasdas", userId);
+    handleUserToggle(userId);
   };
 
   const columns = [
@@ -80,16 +92,17 @@ const ManageCustomers = ({ allUsers, handleDeleteUser, handleUpdateUser }) => {
               Edit
             </Button>
           )}
+          {console.log("sadsa23dsad", user?.isActive)}
           <Button
             style={{
-              backgroundColor: "red",
+              backgroundColor: user.isActive ? "red" : "#23b823",
               color: "white",
               border: "none",
               marginLeft: 8,
             }}
-            onClick={() => handleDeleteUser(user.id)}
+            onClick={() => handleToggleUserStatus(user?.id)}
           >
-            Deactivate User
+            {user.isActive ? "Deactivate" : "Activate"}
           </Button>
         </>
       ),
@@ -101,7 +114,9 @@ const ManageCustomers = ({ allUsers, handleDeleteUser, handleUpdateUser }) => {
       <h2 className="text-2xl font-bold mb-4">Manage your customers</h2>
       <Table
         columns={columns}
-        dataSource={allUsers.filter((user) => user?.isActive && user?.role !== "Admin")}
+        dataSource={allUsers
+          .filter((user) => user.role !== "Admin")
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))} 
         rowKey="id"
       />
     </div>

@@ -50,7 +50,7 @@ const OrdersTable = ({ role, orders, handleOrderSaveChanges, setOrders }) => {
       title: "Order ID",
       dataIndex: "orderNumber",
       key: "orderNumber",
-      render: (orderNumber) => `#${orderNumber}`
+      render: (orderNumber) => `#${orderNumber}`,
     },
     {
       title: "Amount",
@@ -64,17 +64,21 @@ const OrdersTable = ({ role, orders, handleOrderSaveChanges, setOrders }) => {
       key: "status",
       render: (status, record) =>
         role === "Admin" ? (
-          <Select
-            value={editedOrders[record.id] ?? record.status} // Show edited status if available
-            onChange={(value) => handleStatusChange(record.id, value)}
-            style={{ width: 150 }}
-          >
-            <Select.Option value="ordered">Ordered</Select.Option>
-            <Select.Option value="shipping in status">Shipping</Select.Option>
-            <Select.Option value="shipped">Shipped</Select.Option>
-            <Select.Option value="delivered">Delivered</Select.Option>
-            <Select.Option value="cancelled">Cancelled</Select.Option>
-          </Select>
+          status !== "cancelled" ? (
+            <Select
+              value={editedOrders[record.id] ?? record.status} // Show edited status if available
+              onChange={(value) => handleStatusChange(record.id, value)}
+              style={{ width: 150 }}
+            >
+              <Select.Option value="ordered">Ordered</Select.Option>
+              <Select.Option value="shipping in status">Shipping</Select.Option>
+              <Select.Option value="shipped">Shipped</Select.Option>
+              <Select.Option value="delivered">Delivered</Select.Option>
+              <Select.Option value="cancelled">Cancelled</Select.Option>
+            </Select>
+          ) : (
+            `${status}`
+          )
         ) : (
           status
         ),

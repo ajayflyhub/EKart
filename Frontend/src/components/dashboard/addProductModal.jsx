@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Modal, Input, Button, Form, message } from "antd";
+import { Modal, Input, Button, Form, message, Upload } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
 import { useDispatch } from "react-redux";
 import { addProduct } from "../../redux/Actions/productActions"; // Assuming you have the action defined
 
@@ -7,7 +8,7 @@ const AddProductModal = ({ isModalVisible, setIsModalVisible }) => {
   const [productFormData, setProductFormData] = useState({
     name: "",
     description: "",
-    imageURL: "",
+    imageUrl: "", // Changed from imageURL to imagePath
     price: 0,
     quantity: 0,
   });
@@ -22,8 +23,22 @@ const AddProductModal = ({ isModalVisible, setIsModalVisible }) => {
     }));
   };
 
+  const handleFileChange = (info) => {
+    const file = info.file.originFileObj;
+    const localPath = URL.createObjectURL(file); // Temporary local URL
+  
+    setProductFormData((prevData) => ({
+      ...prevData,
+      imagePath: localPath, // Store temporary local URL
+    }));
+  };  
+
   const handleAddProduct = async () => {
-    if (!productFormData.name || !productFormData.price || !productFormData.quantity) {
+    if (
+      !productFormData.name ||
+      !productFormData.price ||
+      !productFormData.quantity
+    ) {
       message.error("Please fill in all required fields.");
       return;
     }
@@ -71,13 +86,17 @@ const AddProductModal = ({ isModalVisible, setIsModalVisible }) => {
           />
         </Form.Item>
 
-        <Form.Item label="Image URL">
-          <Input
-            name="imageURL"
-            value={productFormData.imageURL}
-            onChange={handleFormChange}
-            placeholder="Enter image URL"
-          />
+        <Form.Item label="Upload Image">
+          <Upload
+            beforeUpload={() => false} // Prevent automatic upload
+            onChange={handleFileChange}
+            showUploadList={true}
+          >
+            <Button icon={<UploadOutlined />}>Click to Upload</Button>
+          </Upload>
+          {productFormData.imageUrl && (
+            <p>File selected: {productFormData.imageUrl}</p>
+          )}
         </Form.Item>
 
         <Form.Item label="Price" required>

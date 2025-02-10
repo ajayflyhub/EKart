@@ -9,6 +9,8 @@ import {
 } from "./redux/Actions/orderActions";
 import { fetchAddresses } from "./redux/Actions/addressActions";
 import {
+  activateUser,
+  deactivateUser,
   deleteUser,
   getAllUsers,
   updateUser,
@@ -57,12 +59,12 @@ const Dashboard = () => {
       dispatch(fetchAddresses(userId));
       dispatch(getTransactionsAsyncByUserId(userId));
     }
-    if ((user && user?.role === "Admin")) {
+    if (user && user?.role === "Admin") {
       dispatch(getAllUsers());
       dispatch(getAllOrders());
       dispatch(fetchProducts());
     }
-    if(user?.role === "operations"){
+    if (user?.role === "operations") {
       dispatch(fetchProducts());
     }
   }, [user, dispatch, userId]);
@@ -75,11 +77,10 @@ const Dashboard = () => {
     if (role === "customer") {
       setOrders(orderStateToCustomer);
     } else if (role === "Admin") {
-      setAllUsers(allUsersStateData?.filter((user) => user.isActive));
+      setAllUsers(allUsersStateData);
       setOrders(AllordersStateToAdmin);
       setAllProducts(Allproducts);
-    }
-    else if(role === 'operations'){
+    } else if (role === "operations") {
       setAllProducts(Allproducts);
     }
   }, [
@@ -91,8 +92,8 @@ const Dashboard = () => {
     Allproducts,
   ]);
 
-  const handleSave = (userId, updatedUserDetails) => {
-    dispatch(updateUser(userId, updatedUserDetails));
+  const handleSave = async (userId, updatedUserDetails) => {
+    const success = await dispatch(updateUser(userId, updatedUserDetails));
     console.log("Saving user details:", updatedUserDetails);
   };
 
@@ -115,7 +116,21 @@ const Dashboard = () => {
     const updatedUser = allUsers.find((u) => u.id === user.id);
 
     if (updatedUser) {
-      dispatch(updateUser(updatedUser.id, user)); // Use `user`, not `updatedUser`
+      const success = await dispatch(updateUser(updatedUser.id, user)); // Use `user`, not `updatedUser`
+      if (success) dispatch(getAllUsers());
+    } else {
+      console.error("User not found");
+    }
+  };
+
+  const handleUserToggle = async (userId) => {
+    const updatedUser = allUsers.find((u) => u.id === userId);
+    if (updatedUser && !updatedUser.isActive) {
+      const success = await dispatch(activateUser(updatedUser.id)); // Use `user`, not `updatedUser`
+      if (success) dispatch(getAllUsers());
+    } else if (updatedUser && updatedUser.isActive) {
+      const success = await dispatch(deactivateUser(updatedUser?.id));
+      if (success) dispatch(getAllUsers());
     } else {
       console.error("User not found");
     }
@@ -188,6 +203,7 @@ const Dashboard = () => {
             handleFieldChange={handleFieldChange}
             handleDeleteUser={handleDeleteUser}
             handleUpdateUser={handleUpdateUser}
+            handleUserToggle={handleUserToggle}
           />
         ) : null;
 

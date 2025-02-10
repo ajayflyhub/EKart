@@ -239,6 +239,48 @@ public class UsersController : ControllerBase
         if (!isDeleted) return NoContent();
         return NoContent();
     }
+
+
+    [HttpPut("activate/{id}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult> ActivateUser(int id)
+    {
+        var user = await _userService.GetUserByIdAsync(id);
+        if (user == null)
+        {
+            return NotFound("User not found.");
+        }
+
+        user.IsActive = true; // Assuming `IsActive` is a property in the User model
+        var isUpdated = await _userService.UpdateUserAsync(id, user);
+        if (!isUpdated)
+        {
+            return BadRequest("Failed to activate user.");
+        }
+
+        return Ok("User activated successfully.");
+    }
+
+    [HttpPut("deactivate/{id}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult> DeactivateUser(int id)
+    {
+        var user = await _userService.GetUserByIdAsync(id);
+        if (user == null)
+        {
+            return NotFound("User not found.");
+        }
+
+        user.IsActive = false; // Assuming `IsActive` is a property in the User model
+        var isUpdated = await _userService.UpdateUserAsync(id, user);
+        if (!isUpdated)
+        {
+            return BadRequest("Failed to deactivate user.");
+        }
+
+        return Ok("User deactivated successfully.");
+    }
+
 }
 
 public class LoginRequest

@@ -2,16 +2,19 @@ import React, { useEffect, useState } from "react";
 import ProductCard from "./components/productCard";
 import { fetchProducts } from "./redux/Actions/productActions";
 import { useDispatch, useSelector } from "react-redux";
+import { fetchCart } from "./redux/Actions/cartActions";
 
 const ProductPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const dispatch = useDispatch();
   const products = useSelector((state) => state.products.products);
+  const user = useSelector((state) => state.user.user);
   const [filteredProducts, setFilteredProducts] = useState([]);
 
   useEffect(() => {
     dispatch(fetchProducts());
-  }, [dispatch]);
+    dispatch(fetchCart(user?.id));
+  }, [dispatch, user]);
 
   useEffect(() => {
     setFilteredProducts(products);

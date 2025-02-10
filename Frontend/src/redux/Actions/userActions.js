@@ -20,6 +20,12 @@ import {
   fetchAllUsersRequest,
   fetchAllUsersSuccess,
   fetchAllUsersFailure,
+  activateUserRequest,
+  activateUserSuccess,
+  activateUserFailure,
+  deactivateUserRequest,
+  deactivateUserSuccess,
+  deactivateUserFailure,
 } from "../reducers/userReducer";
 import { message } from "antd";
 import { createWalletAsync, getWalletAsync } from "./walletActions";
@@ -202,8 +208,10 @@ export const updateUser = (userId, user) => async (dispatch) => {
       );
       dispatch(updateUserSuccess(response.data));
       message.success(user.username + " is updated successfully");
+      return true;
     } else {
       dispatch(updateUserFailure("No token found"));
+      return false;
     }
   } catch (error) {
     dispatch(updateUserFailure(error.response?.data?.message || error.message));
@@ -334,6 +342,50 @@ export const fetchAllAddresses = () => async (dispatch) => {
     return response.data;
   } catch (error) {
     message.error(error.response?.data?.message || error.message);
+  }
+};
+
+// Activate User
+export const activateUser = (userId) => async (dispatch) => {
+  dispatch(activateUserRequest());
+  try {
+    const token = Cookies.get("jwtToken");
+    if (token) {
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      await axios.put(
+        `${process.env.REACT_APP_API_BASE_URL}/Users/activate/${userId}`
+      );
+      dispatch(activateUserSuccess(userId));
+      message.success("User activated successfully");
+      return true;
+    } else {
+      dispatch(activateUserFailure("No token found"));
+      return false;
+    }
+  } catch (error) {
+    dispatch(activateUserFailure(error.response?.data?.message || error.message));
+  }
+};
+
+// Deactivate User
+export const deactivateUser = (userId) => async (dispatch) => {
+  dispatch(deactivateUserRequest());
+  try {
+    const token = Cookies.get("jwtToken");
+    if (token) {
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      await axios.put(
+        `${process.env.REACT_APP_API_BASE_URL}/Users/deactivate/${userId}`
+      );
+      dispatch(deactivateUserSuccess(userId));
+      message.success("User deactivated successfully");
+      return true;
+    } else {
+      dispatch(deactivateUserFailure("No token found"));
+      return false;
+    }
+  } catch (error) {
+    dispatch(deactivateUserFailure(error.response?.data?.message || error.message));
   }
 };
 
